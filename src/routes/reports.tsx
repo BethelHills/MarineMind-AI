@@ -10,6 +10,7 @@ import { maintenanceSummary, healthScoreTrend } from "@/lib/mock-data";
 export const Route = createFileRoute("/reports")({
   head: () => ({ meta: [{ title: "Reports — MarineMind AI" }, { name: "description", content: "Maintenance and equipment health reports." }] }),
   component: Reports,
+  ssr: false,
 });
 
 const typeData = [
