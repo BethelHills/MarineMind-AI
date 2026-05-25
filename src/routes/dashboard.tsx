@@ -9,6 +9,7 @@ import { equipment, upcomingMaintenance, healthTrend } from "@/lib/mock-data";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — MarineMind AI" }, { name: "description", content: "Fleet health overview, alerts, and upcoming maintenance." }] }),
   component: Dashboard,
+  ssr: false,
 });
 
 function Stat({ icon: Icon, label, value, sub, tone = "primary" }: any) {
