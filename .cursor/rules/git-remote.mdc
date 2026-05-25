@@ -9,8 +9,8 @@ This project lives at `/Users/hb/MarineMind/marinemind-ai-assistant`.
 
 Always push all committed changes to:
 
-`https://github.com/BethelHills/marinemind-ai-assistant.git`
+`https://github.com/BethelHills/MarineMind-AI.git`
 
 - Use `origin` as the remote name (must point to the URL above).
 - After making changes the user wants saved, stage, commit, and `git push -u origin HEAD` (or push the current branch).
-- Do not push to `MarineMind-AI` or other remotes unless the user explicitly asks.
+- Do not push to other remotes unless the user explicitly asks.
