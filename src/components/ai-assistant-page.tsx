@@ -334,18 +334,15 @@ export function AIAssistantPageContent() {
     setIsLoading(true);
 
     try {
-      const reply = await getMarineMindResponse(
-        prompt,
-        selectedEquipment,
-        messages.map((message) => ({
-          role: message.role,
-          text: message.text,
-        })),
-      );
+      const reply = await getMarineMindResponse(prompt, selectedEquipment, messages);
 
       setMessages((current) => [
         ...current,
-        { role: "assistant", text: reply, time: now },
+        {
+          role: "assistant",
+          text: reply,
+          time: now,
+        },
       ]);
     } catch (error) {
       setMessages((current) => [
@@ -353,9 +350,8 @@ export function AIAssistantPageContent() {
         {
           role: "assistant",
           text:
-            error instanceof Error
-              ? error.message
-              : "MarineMind AI could not generate a response right now.",
+            (error instanceof Error ? error.message : null) ||
+            "MarineMind AI could not generate a response right now.",
           time: now,
         },
       ]);

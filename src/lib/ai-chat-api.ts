@@ -1,6 +1,7 @@
 type ChatHistoryEntry = {
   role: "user" | "assistant";
   text: string;
+  time?: string;
 };
 
 export async function getMarineMindResponse(
@@ -18,7 +19,7 @@ export async function getMarineMindResponse(
     body: JSON.stringify({
       message,
       equipment,
-      history,
+      history: history.map(({ role, text }) => ({ role, text })),
     }),
   });
 
