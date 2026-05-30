@@ -36,7 +36,7 @@ export const conversationHistory: HistoryItem[] = [
 export const initialMessages: ChatMessage[] = [
   {
     role: "assistant",
-    text: "Hello Bethel. Describe the marine equipment fault and I will suggest possible causes, checks, and maintenance actions.",
+    text: "Hello Bethel. Describe the equipment fault and I will respond with:\n1. Quick Understanding\n2. Possible Causes\n3. Inspection Checklist\n4. Safety Precautions\n5. Recommended Maintenance Action\n6. Maintenance Fault Report Summary",
     time: "09:20 AM",
   },
   {
@@ -46,7 +46,32 @@ export const initialMessages: ChatMessage[] = [
   },
   {
     role: "assistant",
-    text: "Possible causes: restricted cooling line, dirty heat exchanger, weak cooling pump flow, faulty thermostat, overloaded engine, or fuel injector imbalance. Recommended first checks: cooling water pressure, exhaust temperature trend, coolant level, heat exchanger condition, and engine load record.",
+    text: `1. Quick Understanding
+The operator reports rising temperature on Main Engine Alpha after extended operation. This suggests a developing thermal or cooling-related fault.
+
+2. Possible Causes
+- Restricted cooling water flow
+- Dirty or fouled heat exchanger
+- Low coolant level
+- Weak cooling pump performance
+- Overload or fuel injector imbalance
+
+3. Inspection Checklist
+- Record cooling water inlet/outlet pressure and temperature
+- Check coolant level and visible leaks
+- Review exhaust temperature trend
+- Inspect heat exchanger and cooling lines
+
+4. Safety Precautions
+- Reduce load if temperature continues to climb
+- Avoid opening hot circuits without isolation
+- Use PPE and maintain fire watch where high heat is present
+
+5. Recommended Maintenance Action
+Log all readings, inspect cooling flow path, service the heat exchanger if restricted, verify pump output, and create a maintenance task if abnormal values persist.
+
+6. Maintenance Fault Report Summary
+Equipment: Main Engine Alpha. Symptom: rising operating temperature. Risk: Medium-High. Next action: verify cooling system performance and schedule corrective maintenance if trend continues.`,
     time: "09:21 AM",
   },
 ];

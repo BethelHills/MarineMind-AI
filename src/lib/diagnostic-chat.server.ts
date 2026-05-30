@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { buildSystemMessage } from "./agent-prompt";
 import { generateAIResponse } from "./ai-assistant-utils";
 
 const diagnosticInputSchema = z.object({
@@ -15,10 +16,6 @@ const diagnosticInputSchema = z.object({
     .optional(),
 });
 
-const systemPrompt = `You are MarineMind AI, a marine equipment diagnostic assistant for vessel maintenance teams.
-Provide concise, practical guidance: possible causes, inspection steps, and recommended maintenance actions.
-Focus on safety first. Use clear bullet-style sentences when helpful. Keep responses under 200 words unless more detail is essential.`;
-
 export const getDiagnosticReply = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => diagnosticInputSchema.parse(data))
   .handler(async ({ data }) => {
@@ -31,7 +28,7 @@ export const getDiagnosticReply = createServerFn({ method: "POST" })
       const { createChatCompletion } = await import("./openai.server");
 
       return await createChatCompletion([
-        { role: "system", content: `${systemPrompt}\n\nSelected equipment: ${data.equipment}` },
+        { role: "system", content: buildSystemMessage(data.equipment) },
         ...recentHistory,
         { role: "user", content: data.message },
       ]);

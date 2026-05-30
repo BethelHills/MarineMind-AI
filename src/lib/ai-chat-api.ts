@@ -9,7 +9,7 @@ type ChatRequest = {
   history?: ChatHistoryEntry[];
 };
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
 export async function sendChatMessage({ message, equipment, history }: ChatRequest) {
   const response = await fetch(`${API_URL}/api/chat`, {
