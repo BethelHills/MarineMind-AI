@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createChatCompletion } from "./openai.server";
 import { generateAIResponse } from "./ai-assistant-utils";
 
 const diagnosticInputSchema = z.object({
@@ -29,6 +28,8 @@ export const getDiagnosticReply = createServerFn({ method: "POST" })
     }));
 
     try {
+      const { createChatCompletion } = await import("./openai.server");
+
       return await createChatCompletion([
         { role: "system", content: `${systemPrompt}\n\nSelected equipment: ${data.equipment}` },
         ...recentHistory,

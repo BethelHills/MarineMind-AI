@@ -29,11 +29,40 @@ export default tseslint.config(
               message:
                 "TanStack Start does not use the Next.js `server-only` package. Rename the module to `*.server.ts` or mark it with `@tanstack/react-start/server-only`.",
             },
+            {
+              name: "openai",
+              message:
+                "OpenAI SDK is backend-only. Call getDiagnosticReply via useServerFn instead.",
+            },
+          ],
+          patterns: [
+            {
+              group: ["**/openai.server", "**/openai.server.ts"],
+              message:
+                "Do not import backend OpenAI modules from React/frontend code.",
+            },
           ],
         },
       ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+  {
+    files: ["**/*.server.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "server-only",
+              message:
+                "TanStack Start does not use the Next.js `server-only` package. Rename the module to `*.server.ts` or mark it with `@tanstack/react-start/server-only`.",
+            },
+          ],
+        },
+      ],
     },
   },
   eslintPluginPrettier,

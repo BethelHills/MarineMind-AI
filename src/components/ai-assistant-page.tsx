@@ -42,6 +42,7 @@ import {
   type ChatMessage,
 } from "@/lib/ai-assistant-data";
 import { historyStatusStyle } from "@/lib/ai-assistant-utils";
+// Server RPC stub only — OpenAI runs in getDiagnosticReply handler, never in the browser.
 import { getDiagnosticReply } from "@/lib/diagnostic-chat.server";
 
 const faultAreaIcons: Record<string, LucideIcon> = {
