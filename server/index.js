@@ -2,14 +2,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import OpenAI from "openai";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.join(__dirname, "..");
-
-dotenv.config({ path: path.join(rootDir, ".env.local") });
-dotenv.config({ path: path.join(rootDir, ".env") });
+dotenv.config({ path: ".env.local" });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
