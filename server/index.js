@@ -19,50 +19,63 @@ app.post("/api/ai-diagnose", async (req, res) => {
   try {
     const { message, equipment, history = [] } = req.body;
 
-    if (!message) {
+    if (!message || !message.trim()) {
       return res.status(400).json({ error: "Message is required." });
     }
 
     const response = await client.responses.create({
       model: "gpt-4o-mini",
       instructions: `
-You are MarineMind AI, a marine maintenance assistant.
+You are MarineMind AI, a helpful AI assistant for marine engineers and vessel maintenance teams.
 
-Your job is to help marine engineers diagnose equipment faults and generate useful maintenance reports.
+You can chat naturally like ChatGPT, but your main specialty is marine equipment maintenance.
 
-If the user greets you, respond naturally and explain what you can help with.
+If the user greets you or asks how you are, respond naturally and briefly.
 
-If the user describes a fault, respond with:
+If the user asks a general question, answer clearly.
 
-1. Quick Understanding
-2. Possible Causes
-3. Inspection Checklist
-4. Safety Precautions
-5. Recommended Maintenance Action
-6. Maintenance Fault Report Summary
+If the user describes an equipment fault, respond with:
 
-Keep the response clear, practical, and professional.
-Do not claim certainty. Say "possible" or "likely" where needed.
+Quick Understanding:
+Possible Causes:
+Inspection Checklist:
+Safety Precautions:
+Recommended Maintenance Action:
+Maintenance Fault Report Summary:
+
+Keep your answers practical, clear, and professional.
+Do not force every message into a fault report.
+Only use the fault report format when the user describes a real equipment problem.
       `,
       input: [
-        ...history.map((item) => ({
-          role: item.role,
-          content: item.text,
-        })),
         {
           role: "user",
-          content: `Selected equipment: ${equipment || "Not selected"}\n\nUser message: ${message}`,
+          content: `
+Selected equipment: ${equipment || "Not selected"}
+
+Conversation history:
+${history
+  .slice(-6)
+  .map((item) => `${item.role}: ${item.text}`)
+  .join("\n")}
+
+User message:
+${message}
+          `,
         },
       ],
     });
 
-    res.json({
+    return res.json({
       reply: response.output_text,
     });
   } catch (error) {
     console.error("AI Error:", error);
-    res.status(500).json({
-      error: "MarineMind AI could not generate a response right now.",
+
+    return res.status(500).json({
+      error:
+        error?.message ||
+        "MarineMind AI could not generate a response right now.",
     });
   }
 });
