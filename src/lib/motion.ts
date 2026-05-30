@@ -1,6 +1,6 @@
 export const spring = { type: "spring" as const, stiffness: 380, damping: 22 };
 
-const cardHover = {
+export const cardHover = {
   rest: { y: 0, scale: 1 },
   hover: {
     y: -8,
