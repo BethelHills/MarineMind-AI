@@ -12,6 +12,7 @@ import {
   Gauge,
   History,
   Lightbulb,
+  Loader2,
   Mic,
   Plus,
   Search,
@@ -25,6 +26,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +41,8 @@ import {
   quickPrompts,
   type ChatMessage,
 } from "@/lib/ai-assistant-data";
-import { generateAIResponse, historyStatusStyle } from "@/lib/ai-assistant-utils";
+import { historyStatusStyle } from "@/lib/ai-assistant-utils";
+import { getDiagnosticReply } from "@/lib/diagnostic-chat.server";
 
 const faultAreaIcons: Record<string, LucideIcon> = {
   Temperature: ThermometerSun,
@@ -303,8 +306,10 @@ function RecommendationPanel({ selectedEquipment }: { selectedEquipment: string 
 }
 
 export function AIAssistantPageContent() {
+  const getDiagnosticReplyFn = useServerFn(getDiagnosticReply);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedEquipment, setSelectedEquipment] = useState("Main Engine Alpha");
   const [activeHistory, setActiveHistory] = useState("Engine overheating");
   const [mobilePanel, setMobilePanel] = useState<"history" | "context" | null>(null);
@@ -319,19 +324,36 @@ export function AIAssistantPageContent() {
     };
   }, [messages]);
 
-  function handleSend() {
-    if (!input.trim()) return;
+  async function handleSend() {
+    if (!input.trim() || isLoading) return;
 
+    const prompt = input.trim();
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const userMessage: ChatMessage = { role: "user", text: input.trim(), time: now };
-    const aiMessage: ChatMessage = {
-      role: "assistant",
-      text: generateAIResponse(input.trim(), selectedEquipment),
-      time: now,
-    };
+    const userMessage: ChatMessage = { role: "user", text: prompt, time: now };
 
-    setMessages((current) => [...current, userMessage, aiMessage]);
+    setMessages((current) => [...current, userMessage]);
     setInput("");
+    setIsLoading(true);
+
+    try {
+      const reply = await getDiagnosticReplyFn({
+        data: {
+          message: prompt,
+          equipment: selectedEquipment,
+          history: messages.map((message) => ({
+            role: message.role,
+            content: message.text,
+          })),
+        },
+      });
+
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", text: reply, time: now },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleQuickPrompt(prompt: string) {
@@ -458,6 +480,23 @@ export function AIAssistantPageContent() {
                       message={message}
                     />
                   ))}
+                  {isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-3"
+                    >
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-500/10 text-cyan-700">
+                        <Bot className="h-5 w-5" />
+                      </div>
+                      <div className="rounded-3xl bg-white p-4 shadow-sm">
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <Loader2 className="h-4 w-4 animate-spin text-cyan-600" />
+                          Analyzing fault...
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </div>
 
@@ -494,11 +533,12 @@ export function AIAssistantPageContent() {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        handleSend();
+                        void handleSend();
                       }
                     }}
+                    disabled={isLoading}
                     placeholder="Describe the fault, symptoms, readings, or equipment behavior..."
-                    className="min-h-12 flex-1 resize-none bg-transparent px-2 py-3 text-sm outline-none"
+                    className="min-h-12 flex-1 resize-none bg-transparent px-2 py-3 text-sm outline-none disabled:opacity-60"
                   />
                   <motion.button
                     type="button"
@@ -511,10 +551,11 @@ export function AIAssistantPageContent() {
                   </motion.button>
                   <HoverPressable>
                     <Button
-                      onClick={handleSend}
-                      className="h-12 rounded-2xl bg-cyan-500 px-5 text-white hover:bg-cyan-600"
+                      onClick={() => void handleSend()}
+                      disabled={isLoading}
+                      className="h-12 rounded-2xl bg-cyan-500 px-5 text-white hover:bg-cyan-600 disabled:opacity-60"
                     >
-                      <Send className="h-5 w-5" />
+                      {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                     </Button>
                   </HoverPressable>
                 </div>
