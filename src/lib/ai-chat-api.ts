@@ -8,9 +8,9 @@ export async function getMarineMindResponse(
   equipment: string,
   history: ChatHistoryEntry[] = [],
 ) {
-  const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  const response = await fetch(`${apiUrl}/api/ai-diagnose`, {
+  const response = await fetch(`${API_URL}/api/ai-diagnose`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
