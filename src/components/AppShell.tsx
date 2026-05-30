@@ -9,7 +9,6 @@ import {
   BarChart3,
   FolderOpen,
   Settings,
-  Anchor,
   ShipWheel,
   ChevronRight,
   Search,
@@ -19,6 +18,7 @@ import {
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { HoverPressable } from "@/components/motion";
+import { Logo } from "@/components/Logo";
 import { spring } from "@/lib/motion";
 import { statusStyle } from "@/lib/status-style";
 
@@ -66,19 +66,13 @@ export function AppShell({
         className={`${mobileOpen ? "fixed inset-y-0 left-0 z-50 w-72" : "hidden"} border-r border-white/10 bg-[#03131f] p-5 text-white lg:fixed lg:inset-y-0 lg:left-0 lg:block lg:w-72`}
       >
         <div className="flex items-center justify-between">
-          <HoverPressable className="flex items-center gap-3">
-            <motion.div
-              className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-400/15 ring-1 ring-cyan-300/30"
-              whileHover={{ rotate: 12, scale: 1.08 }}
-              transition={spring}
-            >
-              <Anchor className="h-7 w-7 text-cyan-300" />
-            </motion.div>
+          <Link to="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
+            <Logo size="lg" />
             <div>
               <h1 className="text-lg font-black tracking-tight">MarineMind AI</h1>
               <p className="text-xs text-slate-400">Maintenance Command</p>
             </div>
-          </HoverPressable>
+          </Link>
           <button className="lg:hidden" onClick={() => setMobileOpen(false)}>
             <X className="h-6 w-6" />
           </button>

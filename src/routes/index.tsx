@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
-  Anchor,
   Bot,
   Gauge,
   ShieldCheck,
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/Logo";
 import { cardHover, spring } from "@/lib/motion";
 
 export const Route = createFileRoute("/")({
@@ -173,13 +173,7 @@ function MarineMindLandingPage() {
             whileHover={{ scale: 1.02 }}
             transition={spring}
           >
-            <motion.div
-              className="grid h-11 w-11 place-items-center rounded-2xl bg-cyan-400/15 ring-1 ring-cyan-300/30"
-              whileHover={{ rotate: 12, scale: 1.08 }}
-              transition={spring}
-            >
-              <Anchor className="h-6 w-6 text-cyan-300" />
-            </motion.div>
+            <Logo size="md" />
             <div>
               <h1 className="text-lg font-bold tracking-tight">MarineMind AI</h1>
               <p className="text-xs text-slate-300">Smart marine maintenance</p>
