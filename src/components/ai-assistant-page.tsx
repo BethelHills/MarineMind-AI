@@ -31,7 +31,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
 import { spring } from "@/lib/motion";
-import { sendChatMessage } from "@/lib/ai-chat-api";
+import { getMarineMindResponse } from "@/lib/ai-chat-api";
 import {
   aiSuggestedChecks,
   commonFaultAreas,
@@ -41,7 +41,7 @@ import {
   quickPrompts,
   type ChatMessage,
 } from "@/lib/ai-assistant-data";
-import { generateAIResponse, historyStatusStyle } from "@/lib/ai-assistant-utils";
+import { historyStatusStyle } from "@/lib/ai-assistant-utils";
 
 const faultAreaIcons: Record<string, LucideIcon> = {
   Temperature: ThermometerSun,
@@ -334,25 +334,28 @@ export function AIAssistantPageContent() {
     setIsLoading(true);
 
     try {
-      const reply = await sendChatMessage({
-        message: prompt,
-        equipment: selectedEquipment,
-        history: messages.map((message) => ({
+      const reply = await getMarineMindResponse(
+        prompt,
+        selectedEquipment,
+        messages.map((message) => ({
           role: message.role,
           text: message.text,
         })),
-      });
+      );
 
       setMessages((current) => [
         ...current,
         { role: "assistant", text: reply, time: now },
       ]);
-    } catch {
+    } catch (error) {
       setMessages((current) => [
         ...current,
         {
           role: "assistant",
-          text: generateAIResponse(prompt, selectedEquipment),
+          text:
+            error instanceof Error
+              ? error.message
+              : "MarineMind AI could not generate a response right now.",
           time: now,
         },
       ]);

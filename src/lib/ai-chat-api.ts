@@ -3,26 +3,30 @@ type ChatHistoryEntry = {
   text: string;
 };
 
-type ChatRequest = {
-  message: string;
-  equipment: string;
-  history?: ChatHistoryEntry[];
-};
+export async function getMarineMindResponse(
+  message: string,
+  equipment: string,
+  history: ChatHistoryEntry[] = [],
+) {
+  const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
-
-export async function sendChatMessage({ message, equipment, history }: ChatRequest) {
-  const response = await fetch(`${API_URL}/api/ai-diagnose`, {
+  const response = await fetch(`${apiUrl}/api/ai-diagnose`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, equipment, history }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message,
+      equipment,
+      history,
+    }),
   });
 
+  const data = (await response.json()) as { reply?: string; error?: string };
+
   if (!response.ok) {
-    const errorBody = (await response.json().catch(() => null)) as { error?: string } | null;
-    throw new Error(errorBody?.error ?? "Failed to reach AI backend");
+    throw new Error(data.error || "Failed to get AI response.");
   }
 
-  const data = (await response.json()) as { reply?: string };
   return data.reply ?? "";
 }
