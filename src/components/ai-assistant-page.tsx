@@ -26,12 +26,12 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { useServerFn } from "@tanstack/react-start";
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
 import { spring } from "@/lib/motion";
+import { sendChatMessage } from "@/lib/ai-chat-api";
 import {
   aiSuggestedChecks,
   commonFaultAreas,
@@ -41,9 +41,7 @@ import {
   quickPrompts,
   type ChatMessage,
 } from "@/lib/ai-assistant-data";
-import { historyStatusStyle } from "@/lib/ai-assistant-utils";
-// Server RPC stub only — OpenAI runs in getDiagnosticReply handler, never in the browser.
-import { getDiagnosticReply } from "@/lib/diagnostic-chat.server";
+import { generateAIResponse, historyStatusStyle } from "@/lib/ai-assistant-utils";
 
 const faultAreaIcons: Record<string, LucideIcon> = {
   Temperature: ThermometerSun,
@@ -307,7 +305,6 @@ function RecommendationPanel({ selectedEquipment }: { selectedEquipment: string 
 }
 
 export function AIAssistantPageContent() {
-  const getDiagnosticReplyFn = useServerFn(getDiagnosticReply);
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -337,20 +334,27 @@ export function AIAssistantPageContent() {
     setIsLoading(true);
 
     try {
-      const reply = await getDiagnosticReplyFn({
-        data: {
-          message: prompt,
-          equipment: selectedEquipment,
-          history: messages.map((message) => ({
-            role: message.role,
-            content: message.text,
-          })),
-        },
+      const reply = await sendChatMessage({
+        message: prompt,
+        equipment: selectedEquipment,
+        history: messages.map((message) => ({
+          role: message.role,
+          content: message.text,
+        })),
       });
 
       setMessages((current) => [
         ...current,
         { role: "assistant", text: reply, time: now },
+      ]);
+    } catch {
+      setMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          text: generateAIResponse(prompt, selectedEquipment),
+          time: now,
+        },
       ]);
     } finally {
       setIsLoading(false);
