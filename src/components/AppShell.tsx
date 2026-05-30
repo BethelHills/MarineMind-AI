@@ -1,41 +1,93 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Wrench, CalendarCheck, Bot, Bell, FileBarChart,
-  FileText, Settings, Moon, Search, Anchor,
+  LayoutDashboard,
+  Gauge,
+  Wrench,
+  Bot,
+  BellRing,
+  BarChart3,
+  FolderOpen,
+  Settings,
+  Anchor,
+  ShipWheel,
+  ChevronRight,
+  Search,
+  Menu,
+  X,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { PageEnter, HoverPressable, HoverIcon } from "@/components/motion";
+import { useState } from "react";
+import { HoverPressable } from "@/components/motion";
 import { spring } from "@/lib/motion";
+import { statusStyle } from "@/lib/status-style";
 
-const nav = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/equipment", label: "Equipment", icon: Wrench },
-  { to: "/maintenance", label: "Maintenance", icon: CalendarCheck },
-  { to: "/ai-assistant", label: "AI Assistant", icon: Bot },
-  { to: "/alerts", label: "Alerts", icon: Bell },
-  { to: "/reports", label: "Reports", icon: FileBarChart },
-  { to: "/documents", label: "Documents", icon: FileText },
-  { to: "/settings", label: "Settings", icon: Settings },
+const navItems = [
+  { name: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+  { name: "Equipment", icon: Gauge, to: "/equipment" },
+  { name: "Maintenance", icon: Wrench, to: "/maintenance" },
+  { name: "AI Assistant", icon: Bot, to: "/ai-assistant" },
+  { name: "Alerts", icon: BellRing, to: "/alerts" },
+  { name: "Reports", icon: BarChart3, to: "/reports" },
+  { name: "Documents", icon: FolderOpen, to: "/documents" },
+  { name: "Settings", icon: Settings, to: "/settings" },
 ];
 
-export function AppShell({ title, children, headerRight }: { title: string; children: ReactNode; headerRight?: ReactNode }) {
+export function AppShell({
+  title,
+  children,
+  headerRight,
+}: {
+  title: string;
+  children: ReactNode;
+  headerRight?: ReactNode;
+}) {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isActive = (to: string) =>
+    path === to || (to !== "/dashboard" && path.startsWith(to));
+
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="w-64 shrink-0 bg-sidebar text-sidebar-foreground flex flex-col">
-        <HoverPressable className="px-5 py-5 flex items-center gap-2">
-          <HoverIcon>
-            <div className="size-8 rounded-lg bg-sidebar-active/20 grid place-items-center text-sidebar-active">
-              <Anchor className="size-5" />
+    <div className="min-h-screen bg-[#f5fbff] text-slate-900">
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <aside
+        className={`${mobileOpen ? "fixed inset-y-0 left-0 z-50 w-72" : "hidden"} border-r border-white/10 bg-[#03131f] p-5 text-white lg:fixed lg:inset-y-0 lg:left-0 lg:block lg:w-72`}
+      >
+        <div className="flex items-center justify-between">
+          <HoverPressable className="flex items-center gap-3">
+            <motion.div
+              className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-400/15 ring-1 ring-cyan-300/30"
+              whileHover={{ rotate: 12, scale: 1.08 }}
+              transition={spring}
+            >
+              <Anchor className="h-7 w-7 text-cyan-300" />
+            </motion.div>
+            <div>
+              <h1 className="text-lg font-black tracking-tight">MarineMind AI</h1>
+              <p className="text-xs text-slate-400">Maintenance Command</p>
             </div>
-          </HoverIcon>
-          <span className="font-semibold text-lg">MarineMind AI</span>
-        </HoverPressable>
-        <nav className="flex-1 px-3 py-2 space-y-1">
-          {nav.map((item) => {
-            const active = path === item.to || (item.to !== "/dashboard" && path.startsWith(item.to));
+          </HoverPressable>
+          <button className="lg:hidden" onClick={() => setMobileOpen(false)}>
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        <nav className="mt-10 space-y-2">
+          {navItems.map((item) => {
             const Icon = item.icon;
+            const active = isActive(item.to);
             return (
               <motion.div
                 key={item.to}
@@ -45,96 +97,116 @@ export function AppShell({ title, children, headerRight }: { title: string; chil
               >
                 <Link
                   to={item.to}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm transition ${
                     active
-                      ? "bg-sidebar-active text-primary-foreground font-medium shadow-sm"
-                      : "text-sidebar-muted hover:bg-white/5 hover:text-sidebar-foreground"
+                      ? "bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-400/20"
+                      : "text-slate-300 hover:bg-white/8 hover:text-white"
                   }`}
                 >
-                  <motion.span whileHover={{ rotate: active ? 0 : -8, scale: 1.1 }} transition={spring}>
-                    <Icon className="size-4" />
-                  </motion.span>
-                  {item.label}
+                  <span className="flex items-center gap-3">
+                    <motion.span whileHover={{ rotate: -8, scale: 1.1 }} transition={spring}>
+                      <Icon className="h-5 w-5" />
+                    </motion.span>
+                    {item.name}
+                  </span>
+                  {active && (
+                    <motion.span initial={{ x: -4, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+                      <ChevronRight className="h-4 w-4" />
+                    </motion.span>
+                  )}
                 </Link>
               </motion.div>
             );
           })}
         </nav>
-        <motion.button
-          className="mx-3 mb-4 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-sidebar-muted hover:bg-white/5"
-          whileHover={{ x: 4, scale: 1.02 }}
-          whileTap={{ scale: 0.97 }}
+
+        <motion.div
+          className="absolute bottom-5 left-5 right-5 rounded-3xl border border-cyan-300/20 bg-cyan-400/10 p-5"
+          whileHover={{ scale: 1.02, borderColor: "rgba(103, 232, 249, 0.45)" }}
           transition={spring}
         >
-          <Moon className="size-4" /> Dark Mode
-        </motion.button>
+          <motion.div
+            className="mb-3 grid h-11 w-11 place-items-center rounded-2xl bg-white/10"
+            whileHover={{ rotate: 12 }}
+            transition={spring}
+          >
+            <ShipWheel className="h-6 w-6 text-cyan-300" />
+          </motion.div>
+          <p className="font-bold">Vessel Alpha</p>
+          <p className="mt-1 text-sm leading-6 text-slate-400">
+            Health score stable. 3 tasks need attention.
+          </p>
+        </motion.div>
       </aside>
 
-      <main className="flex-1 min-w-0">
-        <header className="flex items-center gap-4 px-8 py-5 border-b border-border bg-card">
-          <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-          <div className="flex-1 max-w-md ml-6">
+      <main className="lg:pl-72">
+        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-[#f5fbff]/85 px-4 py-4 backdrop-blur lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <HoverPressable>
+                <button
+                  className="rounded-xl border bg-white p-2 lg:hidden"
+                  onClick={() => setMobileOpen(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+              </HoverPressable>
+              <div>
+                <p className="text-sm text-slate-500">MarineMind AI</p>
+                <h2 className="text-2xl font-black text-slate-950">{title}</h2>
+              </div>
+            </div>
+
             <motion.div
-              className="relative"
-              whileHover={{ scale: 1.01 }}
+              className="hidden max-w-md flex-1 items-center gap-2 rounded-2xl border bg-white px-4 py-3 md:flex"
+              whileHover={{ scale: 1.01, boxShadow: "0 8px 24px rgba(14, 165, 233, 0.08)" }}
               transition={spring}
             >
-              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search className="h-5 w-5 text-slate-400" />
               <input
-                placeholder="Search anything..."
-                className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow hover:shadow-sm"
+                className="w-full bg-transparent text-sm outline-none"
+                placeholder="Search equipment, reports, alerts..."
               />
             </motion.div>
-          </div>
-          <div className="flex items-center gap-4">
-            {headerRight}
-            <motion.button
-              className="relative p-2 rounded-lg hover:bg-muted"
-              whileHover={{ scale: 1.08, rotate: 8 }}
-              whileTap={{ scale: 0.95 }}
-              transition={spring}
-            >
-              <Bell className="size-5 text-muted-foreground" />
-              <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-critical" />
-            </motion.button>
-            <motion.div
-              className="flex items-center gap-3 cursor-default"
-              whileHover={{ scale: 1.02 }}
-              transition={spring}
-            >
+
+            <div className="flex items-center gap-3">
+              {headerRight}
+              <HoverPressable>
+                <button className="rounded-2xl border bg-white p-3">
+                  <BellRing className="h-5 w-5 text-slate-700" />
+                </button>
+              </HoverPressable>
               <motion.div
-                className="size-9 rounded-full bg-gradient-to-br from-primary to-accent-foreground grid place-items-center text-primary-foreground text-sm font-semibold"
-                whileHover={{ scale: 1.08 }}
+                className="hidden rounded-2xl bg-[#03131f] px-4 py-3 text-white sm:block"
+                whileHover={{ scale: 1.03 }}
                 transition={spring}
               >
-                SO
+                <p className="text-xs text-slate-400">Engineer</p>
+                <p className="text-sm font-bold">Bethel Hillary</p>
               </motion.div>
-              <div className="text-sm leading-tight">
-                <div className="font-medium text-foreground">Samson O.</div>
-                <div className="text-muted-foreground text-xs">Chief Engineer</div>
-              </div>
-            </motion.div>
+            </div>
           </div>
         </header>
-        <div className="p-8">
-          <PageEnter>{children}</PageEnter>
-        </div>
+
+        <motion.div
+          key={path}
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="p-4 lg:p-8"
+        >
+          {children}
+        </motion.div>
       </main>
     </div>
   );
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    Healthy: "bg-success/15 text-success-foreground",
-    Warning: "bg-warning/20 text-warning-foreground",
-    Critical: "bg-critical/15 text-critical",
-    Completed: "bg-success/15 text-success-foreground",
-    Normal: "bg-success/15 text-success-foreground",
-  };
   return (
     <motion.span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? "bg-muted text-muted-foreground"}`}
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${statusStyle(status)}`}
       whileHover={{ scale: 1.08 }}
       transition={spring}
     >
@@ -146,7 +218,7 @@ export function StatusBadge({ status }: { status: string }) {
 export function DueBadge({ text }: { text: string }) {
   return (
     <motion.span
-      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-warning/20 text-warning-foreground"
+      className="inline-flex items-center rounded-full border border-amber-200 bg-amber-500/15 px-3 py-1 text-xs font-semibold text-amber-700"
       whileHover={{ scale: 1.08 }}
       transition={spring}
     >

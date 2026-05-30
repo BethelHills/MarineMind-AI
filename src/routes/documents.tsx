@@ -1,112 +1,50 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { HoverCard, HoverPressable, HoverTableRow } from "@/components/motion";
-import { FileText, FileSpreadsheet, FileImage, Upload, Search, Download } from "lucide-react";
+import { MarineCard, PageShell } from "@/components/marine-ui";
+import { HoverCard } from "@/components/motion";
+import { FolderOpen, Upload } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { documentCards } from "@/lib/marine-dashboard-data";
 import { motion } from "framer-motion";
 import { spring } from "@/lib/motion";
-
-const docs = [
-  { name: "Main Engine Service Manual.pdf", type: "Manual", size: "12.4 MB", updated: "May 18, 2025", owner: "John D.", kind: "pdf" },
-  { name: "Auxiliary Generator Maintenance Log.xlsx", type: "Log", size: "248 KB", updated: "May 16, 2025", owner: "Mike S.", kind: "xlsx" },
-  { name: "Fuel Purifier Inspection Report.pdf", type: "Report", size: "3.1 MB", updated: "May 14, 2025", owner: "John D.", kind: "pdf" },
-  { name: "Cooling Pump Disassembly.jpg", type: "Photo", size: "1.8 MB", updated: "May 12, 2025", owner: "Mike S.", kind: "img" },
-  { name: "Hydraulic Pump Spec Sheet.pdf", type: "Spec", size: "865 KB", updated: "May 9, 2025", owner: "Samson O.", kind: "pdf" },
-  { name: "Fresh Water Generator Alarm Log.xlsx", type: "Log", size: "412 KB", updated: "May 8, 2025", owner: "Samson O.", kind: "xlsx" },
-  { name: "Steering System Drawing.pdf", type: "Drawing", size: "5.6 MB", updated: "May 5, 2025", owner: "John D.", kind: "pdf" },
-];
-
-function iconFor(kind: string) {
-  if (kind === "xlsx") return { Icon: FileSpreadsheet, color: "text-success-foreground bg-success/15" };
-  if (kind === "img") return { Icon: FileImage, color: "text-primary bg-primary/10" };
-  return { Icon: FileText, color: "text-critical bg-critical/10" };
-}
-
-function DocumentsPage() {
-  return (
-    <AppShell title="Documents">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="relative flex-1 max-w-md">
-          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            placeholder="Search documents..."
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-card border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow hover:shadow-sm"
-          />
-        </div>
-        <HoverPressable className="ml-auto">
-          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
-            <Upload className="size-4" /> Upload Document
-          </button>
-        </HoverPressable>
-      </div>
-
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        {[
-          { label: "Total Documents", value: docs.length },
-          { label: "Manuals", value: 1 },
-          { label: "Reports", value: 1 },
-          { label: "Logs", value: 2 },
-        ].map((s) => (
-          <HoverCard key={s.label} className="bg-card border border-border rounded-2xl p-5">
-            <div className="text-sm text-muted-foreground">{s.label}</div>
-            <div className="mt-2 text-3xl font-semibold text-foreground">{s.value}</div>
-          </HoverCard>
-        ))}
-      </div>
-
-      <HoverCard lift={false} className="bg-card border border-border rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-base font-semibold text-foreground">Library</h2>
-        </div>
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40 text-muted-foreground">
-            <tr className="text-left">
-              <th className="px-6 py-3 font-medium">Name</th>
-              <th className="px-6 py-3 font-medium">Type</th>
-              <th className="px-6 py-3 font-medium">Size</th>
-              <th className="px-6 py-3 font-medium">Updated</th>
-              <th className="px-6 py-3 font-medium">Owner</th>
-              <th className="px-6 py-3" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {docs.map((d) => {
-              const { Icon, color } = iconFor(d.kind);
-              return (
-                <HoverTableRow key={d.name}>
-                  <td className="px-6 py-3">
-                    <div className="flex items-center gap-3">
-                      <motion.div
-                        className={`size-9 rounded-lg grid place-items-center ${color}`}
-                        whileHover={{ scale: 1.12, rotate: -6 }}
-                        transition={spring}
-                      >
-                        <Icon className="size-4" />
-                      </motion.div>
-                      <span className="font-medium text-foreground">{d.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-3 text-muted-foreground">{d.type}</td>
-                  <td className="px-6 py-3 text-muted-foreground">{d.size}</td>
-                  <td className="px-6 py-3 text-muted-foreground">{d.updated}</td>
-                  <td className="px-6 py-3 text-muted-foreground">{d.owner}</td>
-                  <td className="px-6 py-3 text-right">
-                    <HoverPressable className="inline-block">
-                      <button className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
-                        <Download className="size-4" /> Download
-                      </button>
-                    </HoverPressable>
-                  </td>
-                </HoverTableRow>
-              );
-            })}
-          </tbody>
-        </table>
-      </HoverCard>
-    </AppShell>
-  );
-}
 
 export const Route = createFileRoute("/documents")({
   head: () => ({ meta: [{ title: "Documents — MarineMind AI" }] }),
   component: DocumentsPage,
 });
+
+function DocumentsPage() {
+  return (
+    <AppShell title="Documents">
+      <PageShell
+        title="Documents"
+        subtitle="Store manuals, certificates, inspection files, and maintenance reports."
+        button="Upload File"
+      >
+        <div className="grid gap-4 lg:grid-cols-3">
+          {documentCards.map((doc) => (
+            <MarineCard key={doc.title}>
+              <motion.span whileHover={{ scale: 1.12, rotate: -6 }} transition={spring}>
+                <FolderOpen className="mb-5 h-8 w-8 text-cyan-600" />
+              </motion.span>
+              <h3 className="font-black text-slate-950">{doc.title}</h3>
+              <p className="mt-2 text-sm text-slate-500">
+                {doc.type} • {doc.date}
+              </p>
+            </MarineCard>
+          ))}
+          <HoverCard className="rounded-3xl border-2 border-dashed border-cyan-200 bg-cyan-50/60">
+            <Card className="rounded-3xl border-0 bg-transparent shadow-none">
+              <CardContent className="grid h-full min-h-44 place-items-center p-6 text-center">
+                <motion.div whileHover={{ scale: 1.05, y: -4 }} transition={spring}>
+                  <Upload className="mx-auto mb-3 h-8 w-8 text-cyan-600" />
+                  <p className="font-bold text-slate-950">Upload new document</p>
+                </motion.div>
+              </CardContent>
+            </Card>
+          </HoverCard>
+        </div>
+      </PageShell>
+    </AppShell>
+  );
+}
