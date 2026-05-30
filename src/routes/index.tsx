@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cardHover, spring } from "@/lib/motion";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,17 +36,6 @@ export const Route = createFileRoute("/")({
   }),
   component: MarineMindLandingPage,
 });
-
-const spring = { type: "spring" as const, stiffness: 380, damping: 22 };
-
-const cardHover = {
-  rest: { y: 0, scale: 1 },
-  hover: {
-    y: -8,
-    scale: 1.02,
-    transition: spring,
-  },
-};
 
 const features = [
   {

@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { HoverCard, HoverPressable, HoverRow, HoverTab } from "@/components/motion";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { User, Bell, Shield, Plug, Save } from "lucide-react";
+import { spring } from "@/lib/motion";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
@@ -13,14 +16,19 @@ const tabs = [
 function Toggle({ on }: { on: boolean }) {
   const [enabled, setEnabled] = useState(on);
   return (
-    <button
+    <motion.button
       onClick={() => setEnabled(!enabled)}
       className={`relative h-6 w-11 rounded-full transition ${enabled ? "bg-primary" : "bg-muted"}`}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.95 }}
+      transition={spring}
     >
-      <span
-        className={`absolute top-0.5 size-5 rounded-full bg-card shadow transition ${enabled ? "left-[22px]" : "left-0.5"}`}
+      <motion.span
+        className="absolute top-0.5 size-5 rounded-full bg-card shadow"
+        animate={{ left: enabled ? 22 : 2 }}
+        transition={spring}
       />
-    </button>
+    </motion.button>
   );
 }
 
@@ -31,7 +39,7 @@ function Field({ label, value, type = "text" }: { label: string; value: string; 
       <input
         type={type}
         defaultValue={value}
-        className="mt-1.5 w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        className="mt-1.5 w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow hover:border-primary/30"
       />
     </label>
   );
@@ -43,12 +51,13 @@ function SettingsPage() {
   return (
     <AppShell title="Settings">
       <div className="grid grid-cols-[220px_1fr] gap-6">
-        <aside className="bg-card border border-border rounded-2xl p-2 h-fit">
+        <HoverCard lift={false} className="bg-card border border-border rounded-2xl p-2 h-fit">
           {tabs.map((t) => {
             const Icon = t.icon;
             return (
-              <button
+              <HoverTab
                 key={t.id}
+                active={active === t.id}
                 onClick={() => setActive(t.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
                   active === t.id
@@ -57,12 +66,12 @@ function SettingsPage() {
                 }`}
               >
                 <Icon className="size-4" /> {t.label}
-              </button>
+              </HoverTab>
             );
           })}
-        </aside>
+        </HoverCard>
 
-        <section className="bg-card border border-border rounded-2xl p-6">
+        <HoverCard className="bg-card border border-border rounded-2xl p-6">
           {active === "profile" && (
             <div className="space-y-6">
               <div>
@@ -70,10 +79,18 @@ function SettingsPage() {
                 <p className="text-sm text-muted-foreground">Update your personal information.</p>
               </div>
               <div className="flex items-center gap-4">
-                <div className="size-16 rounded-full bg-gradient-to-br from-primary to-accent-foreground grid place-items-center text-primary-foreground text-xl font-semibold">
+                <motion.div
+                  className="size-16 rounded-full bg-gradient-to-br from-primary to-accent-foreground grid place-items-center text-primary-foreground text-xl font-semibold"
+                  whileHover={{ scale: 1.08, rotate: 6 }}
+                  transition={spring}
+                >
                   SO
-                </div>
-                <button className="text-sm px-3 py-1.5 rounded-lg border border-border hover:bg-muted">Change photo</button>
+                </motion.div>
+                <HoverPressable>
+                  <button className="text-sm px-3 py-1.5 rounded-lg border border-border hover:bg-muted">
+                    Change photo
+                  </button>
+                </HoverPressable>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Full name" value="Samson O." />
@@ -81,9 +98,11 @@ function SettingsPage() {
                 <Field label="Email" value="samson@marinemind.ai" type="email" />
                 <Field label="Vessel" value="MV Atlantic Voyager" />
               </div>
-              <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
-                <Save className="size-4" /> Save changes
-              </button>
+              <HoverPressable className="inline-block">
+                <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
+                  <Save className="size-4" /> Save changes
+                </button>
+              </HoverPressable>
             </div>
           )}
 
@@ -100,13 +119,16 @@ function SettingsPage() {
                   ["Weekly reports", "Performance and health digest every Monday.", false],
                   ["AI recommendations", "Notify when the AI assistant suggests an action.", true],
                 ].map(([title, desc, on]) => (
-                  <li key={title as string} className="flex items-center justify-between py-4">
+                  <HoverRow
+                    key={title as string}
+                    className="flex items-center justify-between py-4 list-none rounded-lg px-2 -mx-2"
+                  >
                     <div>
                       <div className="text-sm font-medium text-foreground">{title}</div>
                       <div className="text-sm text-muted-foreground">{desc}</div>
                     </div>
                     <Toggle on={on as boolean} />
-                  </li>
+                  </HoverRow>
                 ))}
               </ul>
             </div>
@@ -124,13 +146,13 @@ function SettingsPage() {
                 <Field label="New password" value="" type="password" />
                 <Field label="Confirm new password" value="" type="password" />
               </div>
-              <div className="flex items-center justify-between border-t border-border pt-4">
+              <HoverRow className="flex items-center justify-between border-t border-border pt-4 list-none">
                 <div>
                   <div className="text-sm font-medium text-foreground">Two-factor authentication</div>
                   <div className="text-sm text-muted-foreground">Require a code from your authenticator app.</div>
                 </div>
                 <Toggle on={true} />
-              </div>
+              </HoverRow>
             </div>
           )}
 
@@ -147,18 +169,21 @@ function SettingsPage() {
                   ["Inmarsat Fleet Xpress", "Satellite telemetry uplink.", false],
                   ["Slack", "Send alerts to engineering channel.", false],
                 ].map(([name, desc, on]) => (
-                  <li key={name as string} className="flex items-center justify-between py-4">
+                  <HoverRow
+                    key={name as string}
+                    className="flex items-center justify-between py-4 list-none rounded-lg px-2 -mx-2"
+                  >
                     <div>
                       <div className="text-sm font-medium text-foreground">{name}</div>
                       <div className="text-sm text-muted-foreground">{desc}</div>
                     </div>
                     <Toggle on={on as boolean} />
-                  </li>
+                  </HoverRow>
                 ))}
               </ul>
             </div>
           )}
-        </section>
+        </HoverCard>
       </div>
     </AppShell>
   );

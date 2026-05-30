@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { HoverCard, HoverPressable, HoverTableRow } from "@/components/motion";
 import { FileText, FileSpreadsheet, FileImage, Upload, Search, Download } from "lucide-react";
+import { motion } from "framer-motion";
+import { spring } from "@/lib/motion";
 
 const docs = [
   { name: "Main Engine Service Manual.pdf", type: "Manual", size: "12.4 MB", updated: "May 18, 2025", owner: "John D.", kind: "pdf" },
@@ -26,12 +29,14 @@ function DocumentsPage() {
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             placeholder="Search documents..."
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-card border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full pl-9 pr-3 py-2 rounded-lg bg-card border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow hover:shadow-sm"
           />
         </div>
-        <button className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
-          <Upload className="size-4" /> Upload Document
-        </button>
+        <HoverPressable className="ml-auto">
+          <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
+            <Upload className="size-4" /> Upload Document
+          </button>
+        </HoverPressable>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -41,14 +46,14 @@ function DocumentsPage() {
           { label: "Reports", value: 1 },
           { label: "Logs", value: 2 },
         ].map((s) => (
-          <div key={s.label} className="bg-card border border-border rounded-2xl p-5">
+          <HoverCard key={s.label} className="bg-card border border-border rounded-2xl p-5">
             <div className="text-sm text-muted-foreground">{s.label}</div>
             <div className="mt-2 text-3xl font-semibold text-foreground">{s.value}</div>
-          </div>
+          </HoverCard>
         ))}
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <HoverCard lift={false} className="bg-card border border-border rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Library</h2>
         </div>
@@ -67,12 +72,16 @@ function DocumentsPage() {
             {docs.map((d) => {
               const { Icon, color } = iconFor(d.kind);
               return (
-                <tr key={d.name} className="hover:bg-muted/30">
+                <HoverTableRow key={d.name}>
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <div className={`size-9 rounded-lg grid place-items-center ${color}`}>
+                      <motion.div
+                        className={`size-9 rounded-lg grid place-items-center ${color}`}
+                        whileHover={{ scale: 1.12, rotate: -6 }}
+                        transition={spring}
+                      >
                         <Icon className="size-4" />
-                      </div>
+                      </motion.div>
                       <span className="font-medium text-foreground">{d.name}</span>
                     </div>
                   </td>
@@ -81,16 +90,18 @@ function DocumentsPage() {
                   <td className="px-6 py-3 text-muted-foreground">{d.updated}</td>
                   <td className="px-6 py-3 text-muted-foreground">{d.owner}</td>
                   <td className="px-6 py-3 text-right">
-                    <button className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
-                      <Download className="size-4" /> Download
-                    </button>
+                    <HoverPressable className="inline-block">
+                      <button className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline">
+                        <Download className="size-4" /> Download
+                      </button>
+                    </HoverPressable>
                   </td>
-                </tr>
+                </HoverTableRow>
               );
             })}
           </tbody>
         </table>
-      </div>
+      </HoverCard>
     </AppShell>
   );
 }

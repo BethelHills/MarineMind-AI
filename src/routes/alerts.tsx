@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, StatusBadge } from "@/components/AppShell";
+import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
 import { AlertTriangle, AlertCircle, Info, CheckCircle2, Filter } from "lucide-react";
+import { motion } from "framer-motion";
+import { spring } from "@/lib/motion";
 
 type Severity = "Critical" | "Warning" | "Info";
 
@@ -52,32 +55,40 @@ function AlertsPage() {
         ]).map((s) => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="bg-card border border-border rounded-2xl p-5">
+            <HoverCard key={s.label} className="bg-card border border-border rounded-2xl p-5">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{s.label}</span>
-                <Icon className={`size-5 ${s.color}`} />
+                <motion.span whileHover={{ scale: 1.15, rotate: 8 }} transition={spring}>
+                  <Icon className={`size-5 ${s.color}`} />
+                </motion.span>
               </div>
               <div className="mt-3 text-3xl font-semibold text-foreground">{s.value}</div>
-            </div>
+            </HoverCard>
           );
         })}
       </div>
 
-      <div className="bg-card border border-border rounded-2xl">
+      <HoverCard lift={false} className="bg-card border border-border rounded-2xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Active & Recent Alerts</h2>
-          <button className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <Filter className="size-4" /> Filter
-          </button>
+          <HoverPressable>
+            <button className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <Filter className="size-4" /> Filter
+            </button>
+          </HoverPressable>
         </div>
         <ul className="divide-y divide-border">
           {alerts.map((a) => {
             const Icon = sevIcon[a.severity];
             return (
-              <li key={a.id} className="flex items-start gap-4 px-6 py-4">
-                <div className={`mt-0.5 size-9 rounded-lg border grid place-items-center ${sevStyles[a.severity]}`}>
+              <HoverRow key={a.id} className="flex items-start gap-4 px-6 py-4 list-none">
+                <motion.div
+                  className={`mt-0.5 size-9 rounded-lg border grid place-items-center ${sevStyles[a.severity]}`}
+                  whileHover={{ scale: 1.1, rotate: -6 }}
+                  transition={spring}
+                >
                   <Icon className="size-4" />
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-sm font-medium text-foreground">{a.equipment}</span>
@@ -89,16 +100,18 @@ function AlertsPage() {
                 <div className="flex items-center gap-3 shrink-0">
                   <span className="text-xs text-muted-foreground whitespace-nowrap">{a.time}</span>
                   {!a.acknowledged && (
-                    <button className="text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90">
-                      Acknowledge
-                    </button>
+                    <HoverPressable>
+                      <button className="text-xs px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:opacity-90">
+                        Acknowledge
+                      </button>
+                    </HoverPressable>
                   )}
                 </div>
-              </li>
+              </HoverRow>
             );
           })}
         </ul>
-      </div>
+      </HoverCard>
     </AppShell>
   );
 }

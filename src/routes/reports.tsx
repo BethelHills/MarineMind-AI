@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, StatusBadge } from "@/components/AppShell";
+import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
 import { ChevronDown, Calendar } from "lucide-react";
 import {
   BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid,
@@ -30,9 +31,11 @@ function Reports() {
     <AppShell
       title="Reports"
       headerRight={
-        <button className="hidden md:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">
-          Generate Report
-        </button>
+        <HoverPressable>
+          <button className="hidden md:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">
+            Generate Report
+          </button>
+        </HoverPressable>
       }
     >
       <div className="flex flex-wrap gap-3 mb-6">
@@ -42,7 +45,7 @@ function Reports() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="bg-card rounded-2xl border border-border p-6">
+        <HoverCard className="bg-card rounded-2xl border border-border p-6">
           <h3 className="font-semibold text-foreground">Maintenance Summary</h3>
           <p className="text-sm text-muted-foreground mt-1">Total Maintenance</p>
           <div className="flex items-end justify-between mt-3">
@@ -62,9 +65,9 @@ function Reports() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </HoverCard>
 
-        <div className="bg-card rounded-2xl border border-border p-6">
+        <HoverCard className="bg-card rounded-2xl border border-border p-6">
           <h3 className="font-semibold text-foreground">Equipment Health</h3>
           <p className="text-sm text-muted-foreground mt-1">Average Health Score</p>
           <div className="flex items-end justify-between mt-3">
@@ -82,21 +85,21 @@ function Reports() {
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </HoverCard>
 
-        <div className="bg-card rounded-2xl border border-border p-6">
+        <HoverCard className="bg-card rounded-2xl border border-border p-6">
           <h3 className="font-semibold text-foreground mb-4">Top Equipment Alerts</h3>
-          <ol className="space-y-3">
+          <ol className="space-y-1">
             {topAlerts.map((a, i) => (
-              <li key={a.name} className="flex items-center justify-between text-sm">
+              <HoverRow key={a.name} className="flex items-center justify-between text-sm py-2 px-2 rounded-lg list-none">
                 <span className="text-foreground">{i + 1}. {a.name}</span>
                 <StatusBadge status={a.status} />
-              </li>
+              </HoverRow>
             ))}
           </ol>
-        </div>
+        </HoverCard>
 
-        <div className="bg-card rounded-2xl border border-border p-6">
+        <HoverCard className="bg-card rounded-2xl border border-border p-6">
           <h3 className="font-semibold text-foreground mb-4">Maintenance by Type</h3>
           <div className="flex items-center gap-6">
             <div className="relative size-40">
@@ -114,19 +117,19 @@ function Reports() {
                 </div>
               </div>
             </div>
-            <ul className="flex-1 space-y-2 text-sm">
+            <ul className="flex-1 space-y-1 text-sm">
               {typeData.map((d) => (
-                <li key={d.name} className="flex items-center justify-between">
+                <HoverRow key={d.name} className="flex items-center justify-between py-1.5 px-2 rounded-lg list-none">
                   <span className="flex items-center gap-2">
                     <span className="size-2.5 rounded-full" style={{ background: d.color }} />
                     <span className="text-foreground">{d.name}</span>
                   </span>
                   <span className="text-muted-foreground">{d.value} ({Math.round(d.value / 18 * 100)}%)</span>
-                </li>
+                </HoverRow>
               ))}
             </ul>
           </div>
-        </div>
+        </HoverCard>
       </div>
     </AppShell>
   );
@@ -134,16 +137,20 @@ function Reports() {
 
 function Select({ label }: { label: string }) {
   return (
-    <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground">
-      {label} <ChevronDown className="size-4 text-muted-foreground" />
-    </button>
+    <HoverPressable>
+      <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-primary/30">
+        {label} <ChevronDown className="size-4 text-muted-foreground" />
+      </button>
+    </HoverPressable>
   );
 }
 
 function DateField({ value }: { value: string }) {
   return (
-    <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground">
-      <Calendar className="size-4 text-muted-foreground" /> {value}
-    </button>
+    <HoverPressable>
+      <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border text-sm text-foreground hover:border-primary/30">
+        <Calendar className="size-4 text-muted-foreground" /> {value}
+      </button>
+    </HoverPressable>
   );
 }

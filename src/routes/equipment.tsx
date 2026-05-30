@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, StatusBadge } from "@/components/AppShell";
+import { HoverCard, HoverPressable, HoverTab } from "@/components/motion";
 import { Plus, Search, Wrench } from "lucide-react";
 import { equipment, parameters } from "@/lib/mock-data";
+import { motion } from "framer-motion";
 import { useState } from "react";
+import { spring } from "@/lib/motion";
 
 export const Route = createFileRoute("/equipment")({
   head: () => ({ meta: [{ title: "Equipment — MarineMind AI" }, { name: "description", content: "All equipment, health scores, and parameters." }] }),
@@ -20,24 +23,29 @@ function EquipmentPage() {
     <AppShell
       title="Equipment"
       headerRight={
-        <button className="hidden md:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">
-          <Plus className="size-4" /> Add Equipment
-        </button>
+        <HoverPressable>
+          <button className="hidden md:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90">
+            <Plus className="size-4" /> Add Equipment
+          </button>
+        </HoverPressable>
       }
     >
       <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5">
-        <div className="bg-card rounded-2xl border border-border p-4">
+        <HoverCard className="bg-card rounded-2xl border border-border p-4">
           <div className="relative mb-3">
             <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input placeholder="Search equipment..." className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            <input placeholder="Search equipment..." className="w-full pl-9 pr-3 py-2 rounded-lg bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow hover:shadow-sm" />
           </div>
           <ul className="space-y-1">
             {equipment.map((e) => (
               <li key={e.id}>
-                <button
+                <motion.button
                   onClick={() => setSelectedId(e.id)}
+                  whileHover={{ x: 4, scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={spring}
                   className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left transition ${
-                    selectedId === e.id ? "bg-accent" : "hover:bg-muted"
+                    selectedId === e.id ? "bg-accent shadow-sm" : "hover:bg-muted"
                   }`}
                 >
                   <span className="size-9 rounded-lg bg-muted grid place-items-center text-muted-foreground">
@@ -48,13 +56,13 @@ function EquipmentPage() {
                     <span className="block text-xs text-muted-foreground">{e.code}</span>
                   </span>
                   <StatusBadge status={e.status} />
-                </button>
+                </motion.button>
               </li>
             ))}
           </ul>
-        </div>
+        </HoverCard>
 
-        <div className="bg-card rounded-2xl border border-border p-6">
+        <HoverCard className="bg-card rounded-2xl border border-border p-6">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-xl font-semibold text-foreground">{selected.name} ({selected.code})</h2>
@@ -65,12 +73,16 @@ function EquipmentPage() {
 
           <div className="flex gap-6 mt-5 border-b border-border">
             {tabs.map((t) => (
-              <button key={t} onClick={() => setTab(t)}
+              <HoverTab
+                key={t}
+                active={tab === t}
+                onClick={() => setTab(t)}
                 className={`pb-3 text-sm transition border-b-2 -mb-px ${
-                  tab === t ? "border-primary text-primary font-medium" : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}>
+                  tab === t ? "border-primary text-primary font-medium" : "border-transparent text-muted-foreground"
+                }`}
+              >
                 {t}
-              </button>
+              </HoverTab>
             ))}
           </div>
 
@@ -78,13 +90,13 @@ function EquipmentPage() {
             <Info label="Operating Hours" value={`${selected.operatingHours.toLocaleString()} hrs`} />
             <Info label="Last Maintenance" value={selected.lastMaintenance} />
             <Info label="Next Maintenance" value={selected.nextMaintenance} />
-            <div className="bg-muted/50 rounded-xl p-4">
+            <HoverCard className="bg-muted/50 rounded-xl p-4">
               <div className="text-xs text-muted-foreground">Health Score</div>
               <div className="text-2xl font-semibold text-success-foreground mt-1">{selected.healthScore}%</div>
               <div className="mt-2 h-2 rounded-full bg-border overflow-hidden">
                 <div className="h-full bg-success" style={{ width: `${selected.healthScore}%` }} />
               </div>
-            </div>
+            </HoverCard>
           </div>
 
           <div className="mt-8">
@@ -100,17 +112,22 @@ function EquipmentPage() {
                 </thead>
                 <tbody>
                   {parameters.map((p, i) => (
-                    <tr key={p.name} className={i !== parameters.length - 1 ? "border-b border-border" : ""}>
+                    <motion.tr
+                      key={p.name}
+                      whileHover={{ backgroundColor: "oklch(0.96 0.01 275 / 0.5)", scale: 1.005 }}
+                      transition={spring}
+                      className={i !== parameters.length - 1 ? "border-b border-border" : ""}
+                    >
                       <td className="px-4 py-3 text-foreground">{p.name}</td>
                       <td className="px-4 py-3 text-foreground">{p.value}</td>
                       <td className="px-4 py-3"><StatusBadge status={p.status} /></td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
-        </div>
+        </HoverCard>
       </div>
     </AppShell>
   );
@@ -118,9 +135,9 @@ function EquipmentPage() {
 
 function Info({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-muted/50 rounded-xl p-4">
+    <HoverCard className="bg-muted/50 rounded-xl p-4">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="text-lg font-semibold text-foreground mt-1">{value}</div>
-    </div>
+    </HoverCard>
   );
 }
