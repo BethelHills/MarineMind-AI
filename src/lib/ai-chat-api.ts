@@ -1,6 +1,6 @@
 type ChatHistoryEntry = {
   role: "user" | "assistant";
-  content: string;
+  text: string;
 };
 
 type ChatRequest = {
@@ -12,7 +12,7 @@ type ChatRequest = {
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:5000";
 
 export async function sendChatMessage({ message, equipment, history }: ChatRequest) {
-  const response = await fetch(`${API_URL}/api/chat`, {
+  const response = await fetch(`${API_URL}/api/ai-diagnose`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message, equipment, history }),

@@ -339,7 +339,7 @@ export function AIAssistantPageContent() {
         equipment: selectedEquipment,
         history: messages.map((message) => ({
           role: message.role,
-          content: message.text,
+          text: message.text,
         })),
       });
 
