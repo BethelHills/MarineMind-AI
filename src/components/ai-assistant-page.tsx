@@ -42,6 +42,7 @@ import {
   type ChatMessage,
 } from "@/lib/ai-assistant-data";
 import { historyStatusStyle } from "@/lib/ai-assistant-utils";
+import { copyToClipboard } from "@/lib/utils";
 
 const faultAreaIcons: Record<string, LucideIcon> = {
   Temperature: ThermometerSun,
@@ -93,10 +94,14 @@ function SummaryCard({
 }
 
 function ChatMessageBubble({ message }: { message: ChatMessage }) {
+  const [copied, setCopied] = useState(false);
   const isUser = message.role === "user";
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(message.text);
+    const success = await copyToClipboard(message.text);
+    if (!success) return;
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
   }
 
   return (
@@ -127,15 +132,23 @@ function ChatMessageBubble({ message }: { message: ChatMessage }) {
           }`}
         >
           <span className="shrink-0">{message.time}</span>
-          {!isUser && (
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="inline-flex shrink-0 items-center gap-1 hover:text-cyan-600"
-            >
-              <Copy className="h-3.5 w-3.5" /> Copy
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => void handleCopy()}
+            className={`inline-flex shrink-0 items-center gap-1 transition ${
+              isUser ? "hover:text-cyan-300" : "hover:text-cyan-600"
+            } ${copied ? (isUser ? "text-cyan-300" : "text-emerald-600") : ""}`}
+          >
+            {copied ? (
+              <>
+                <CheckCircle2 className="h-3.5 w-3.5" /> Copied
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" /> Copy
+              </>
+            )}
+          </button>
         </div>
       </div>
 
@@ -512,11 +525,29 @@ export function AIAssistantPageContent() {
                 </div>
               </div>
 
-              <div className="shrink-0 border-t bg-white p-4 pb-24 sm:p-5 xl:pb-5">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:hidden">
-                  Suggested prompts
-                </p>
-                <div className="mb-4 max-h-32 space-y-2 overflow-y-auto sm:max-h-none sm:flex sm:flex-wrap sm:gap-2 sm:space-y-0">
+              <div className="relative shrink-0 border-t bg-white p-4 sm:p-5">
+                <div className="mb-3 sm:hidden">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    Suggested prompts
+                  </p>
+                  <div
+                    className="flex snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain scroll-smooth pb-1 pr-16 [-ms-overflow-style:none] [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
+                    style={{ WebkitOverflowScrolling: "touch" }}
+                  >
+                    {quickPrompts.map((prompt) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        onClick={() => handleQuickPrompt(prompt)}
+                        className="w-[min(82vw,17rem)] shrink-0 snap-start rounded-2xl border bg-slate-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-slate-600 transition active:border-cyan-200 active:bg-cyan-50 active:text-cyan-700"
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-4 hidden sm:flex sm:flex-wrap sm:gap-2">
                   {quickPrompts.map((prompt) => (
                     <motion.button
                       key={prompt}
@@ -525,7 +556,7 @@ export function AIAssistantPageContent() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       transition={spring}
-                      className="w-full rounded-2xl border bg-slate-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700 sm:w-auto sm:max-w-sm sm:rounded-full sm:px-4 sm:py-2 sm:text-xs sm:leading-5"
+                      className="max-w-sm rounded-full border bg-slate-50 px-4 py-2 text-left text-xs font-semibold leading-5 text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700"
                     >
                       {prompt}
                     </motion.button>
@@ -629,10 +660,11 @@ export function AIAssistantPageContent() {
       <motion.button
         type="button"
         onClick={() => setMobilePanel("context")}
-        className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#03131f] text-white shadow-xl xl:hidden"
+        className="fixed bottom-[5.75rem] right-4 z-30 grid h-12 w-12 place-items-center rounded-full bg-[#03131f] text-white shadow-xl xl:hidden"
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.95 }}
         transition={spring}
+        aria-label="Open AI context"
       >
         <Lightbulb className="h-6 w-6" />
       </motion.button>
