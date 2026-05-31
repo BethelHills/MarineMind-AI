@@ -15,6 +15,14 @@ const client = new OpenAI({
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({
+    message: "MarineMind AI backend is running",
+    status: "OK",
+    api: "/api/ai-diagnose",
+  });
+});
+
 app.post("/api/ai-diagnose", async (req, res) => {
   try {
     const { message, equipment, history = [] } = req.body;
