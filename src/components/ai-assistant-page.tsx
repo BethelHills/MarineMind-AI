@@ -93,6 +93,46 @@ function SummaryCard({
   );
 }
 
+function SuggestedPromptsMobile({
+  prompts,
+  onSelect,
+}: {
+  prompts: readonly string[];
+  onSelect: (prompt: string) => void;
+}) {
+  return (
+    <div className="mb-3 sm:hidden">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+        Suggested prompts · swipe to browse
+      </p>
+      <div
+        className="w-full overflow-x-scroll overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        <div className="flex w-max min-w-full snap-x snap-mandatory gap-2 pb-1 pr-2">
+          {prompts.map((prompt) => (
+            <div
+              key={prompt}
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelect(prompt)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSelect(prompt);
+                }
+              }}
+              className="w-[min(78vw,18rem)] shrink-0 snap-start cursor-pointer select-none rounded-2xl border bg-slate-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-slate-600 active:border-cyan-200 active:bg-cyan-50 active:text-cyan-700"
+            >
+              {prompt}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ChatMessageBubble({ message }: { message: ChatMessage }) {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === "user";
@@ -440,7 +480,7 @@ export function AIAssistantPageContent() {
           <HistoryPanel active={activeHistory} setActive={setActiveHistory} />
         </div>
 
-        <HoverCard lift={false} className="flex min-h-[calc(100dvh-10rem)] flex-col overflow-hidden rounded-3xl border-0 bg-white shadow-sm sm:min-h-[640px] md:min-h-0 md:h-auto">
+        <div className="flex min-h-[calc(100dvh-10rem)] flex-col overflow-hidden rounded-3xl border-0 bg-white shadow-sm sm:min-h-[640px] md:min-h-0 md:h-auto">
           <Card className="flex min-h-0 flex-1 flex-col rounded-3xl border-0 bg-transparent shadow-none">
             <CardContent className="flex min-h-0 flex-1 flex-col p-0 md:h-[640px]">
               <div className="shrink-0 border-b bg-white p-4 sm:p-5">
@@ -525,27 +565,8 @@ export function AIAssistantPageContent() {
                 </div>
               </div>
 
-              <div className="relative shrink-0 border-t bg-white p-4 sm:p-5">
-                <div className="mb-3 sm:hidden">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                    Suggested prompts
-                  </p>
-                  <div
-                    className="flex snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain scroll-smooth pb-1 pr-16 [-ms-overflow-style:none] [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden"
-                    style={{ WebkitOverflowScrolling: "touch" }}
-                  >
-                    {quickPrompts.map((prompt) => (
-                      <button
-                        key={prompt}
-                        type="button"
-                        onClick={() => handleQuickPrompt(prompt)}
-                        className="w-[min(82vw,17rem)] shrink-0 snap-start rounded-2xl border bg-slate-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-slate-600 transition active:border-cyan-200 active:bg-cyan-50 active:text-cyan-700"
-                      >
-                        {prompt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <div className="relative shrink-0 overflow-visible border-t bg-white p-4 sm:p-5">
+                <SuggestedPromptsMobile prompts={quickPrompts} onSelect={handleQuickPrompt} />
 
                 <div className="mb-4 hidden sm:flex sm:flex-wrap sm:gap-2">
                   {quickPrompts.map((prompt) => (
@@ -608,7 +629,7 @@ export function AIAssistantPageContent() {
               </div>
             </CardContent>
           </Card>
-        </HoverCard>
+        </div>
 
         <div className="hidden xl:block">
           <RecommendationPanel selectedEquipment={selectedEquipment} />
