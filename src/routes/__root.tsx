@@ -8,6 +8,8 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import { ThemeProvider } from "@/components/theme-provider";
+import { themeInitScript } from "@/lib/theme";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -96,9 +98,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
         {children}
@@ -113,7 +116,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

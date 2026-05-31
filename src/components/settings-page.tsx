@@ -32,7 +32,9 @@ import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
+import { useTheme } from "@/components/theme-provider";
 import { spring } from "@/lib/motion";
+import { themeLabelToMode, themeModeToLabel } from "@/lib/theme";
 import {
   aiContextOptions,
   aiModeOptions,
@@ -493,7 +495,8 @@ function SecuritySettings({
 }
 
 function SystemSettings({ system, setSystem }: { system: SystemSettings; setSystem: (system: SystemSettings) => void }) {
-  const ThemeIcon = system.theme === "Dark" ? Moon : Sun;
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const ThemeIcon = resolvedTheme === "dark" ? Moon : Sun;
 
   return (
     <HoverCard lift={false} className="rounded-3xl border-0 bg-white shadow-sm">
@@ -507,8 +510,8 @@ function SystemSettings({ system, setSystem }: { system: SystemSettings; setSyst
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             <SelectField
               label="Theme"
-              value={system.theme}
-              onChange={(value) => setSystem({ ...system, theme: value })}
+              value={themeModeToLabel(theme)}
+              onChange={(value) => setTheme(themeLabelToMode(value))}
               icon={ThemeIcon}
               options={themeOptions}
             />

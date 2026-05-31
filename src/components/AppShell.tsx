@@ -18,6 +18,7 @@ import {
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { HoverPressable } from "@/components/motion";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/Logo";
 import { spring } from "@/lib/motion";
 import { statusStyle } from "@/lib/status-style";
@@ -49,7 +50,7 @@ export function AppShell({
     path === to || (to !== "/dashboard" && path.startsWith(to));
 
   return (
-    <div className="min-h-screen bg-[#f5fbff] text-slate-900">
+    <div className="min-h-screen bg-[#f5fbff] text-slate-900 dark:bg-[#0a1628] dark:text-slate-100">
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -135,25 +136,25 @@ export function AppShell({
       </aside>
 
       <main className="lg:pl-72">
-        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-[#f5fbff]/85 px-4 py-4 backdrop-blur lg:px-8">
+        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-[#f5fbff]/85 px-4 py-4 backdrop-blur dark:border-slate-800/80 dark:bg-[#0a1628]/90 lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <HoverPressable>
                 <button
-                  className="rounded-xl border bg-white p-2 lg:hidden"
+                  className="rounded-xl border bg-white p-2 dark:border-slate-700 dark:bg-[#142236] lg:hidden"
                   onClick={() => setMobileOpen(true)}
                 >
                   <Menu className="h-5 w-5" />
                 </button>
               </HoverPressable>
               <div>
-                <p className="text-sm text-slate-500">MarineMind AI</p>
-                <h2 className="text-2xl font-black text-slate-950">{title}</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">MarineMind AI</p>
+                <h2 className="text-2xl font-black text-slate-950 dark:text-slate-50">{title}</h2>
               </div>
             </div>
 
             <motion.div
-              className="hidden max-w-md flex-1 items-center gap-2 rounded-2xl border bg-white px-4 py-3 md:flex"
+              className="hidden max-w-md flex-1 items-center gap-2 rounded-2xl border bg-white px-4 py-3 dark:border-slate-700 dark:bg-[#142236] md:flex"
               whileHover={{ scale: 1.01, boxShadow: "0 8px 24px rgba(14, 165, 233, 0.08)" }}
               transition={spring}
             >
@@ -166,9 +167,10 @@ export function AppShell({
 
             <div className="flex items-center gap-3">
               {headerRight}
+              <ThemeToggle />
               <HoverPressable>
-                <button className="rounded-2xl border bg-white p-3">
-                  <BellRing className="h-5 w-5 text-slate-700" />
+                <button className="rounded-2xl border bg-white p-3 dark:border-slate-700 dark:bg-[#142236]">
+                  <BellRing className="h-5 w-5 text-slate-700 dark:text-slate-200" />
                 </button>
               </HoverPressable>
               <motion.div

@@ -43,6 +43,11 @@
 
 :root {
   --radius: 0.75rem;
+  --mm-workspace: #f5fbff;
+  --mm-elevated: #ffffff;
+  --mm-muted-surface: #f8fafc;
+  --mm-accent-surface: #f5fbff;
+  --mm-hero: #03131f;
   --background: oklch(0.985 0.005 250);
   --foreground: oklch(0.18 0.04 260);
   --card: oklch(1 0 0);
@@ -77,6 +82,11 @@
 }
 
 .dark {
+  --mm-workspace: #0a1628;
+  --mm-elevated: #142236;
+  --mm-muted-surface: #1a2d44;
+  --mm-accent-surface: #0f1f32;
+  --mm-hero: #021018;
   --background: oklch(0.16 0.03 265);
   --foreground: oklch(0.96 0.005 250);
   --card: oklch(0.22 0.04 265);
@@ -106,5 +116,57 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .dark main .bg-\[\#f5fbff\] {
+    background-color: var(--mm-workspace);
+  }
+
+  .dark main .bg-white {
+    background-color: var(--mm-elevated);
+  }
+
+  .dark main .bg-slate-50 {
+    background-color: var(--mm-muted-surface);
+  }
+
+  .dark main .text-slate-950,
+  .dark main .text-slate-900 {
+    color: #f1f5f9;
+  }
+
+  .dark main .text-slate-800 {
+    color: #e2e8f0;
+  }
+
+  .dark main .text-slate-700 {
+    color: #cbd5e1;
+  }
+
+  .dark main .text-slate-600 {
+    color: #94a3b8;
+  }
+
+  .dark main .text-slate-500 {
+    color: #64748b;
+  }
+
+  .dark main .text-slate-400 {
+    color: #94a3b8;
+  }
+
+  .dark main .border-slate-200 {
+    border-color: rgb(51 65 85 / 0.55);
+  }
+
+  .dark main input,
+  .dark main select,
+  .dark main textarea {
+    color: #f1f5f9;
+  }
+
+  .dark main select option {
+    background-color: #142236;
+    color: #f1f5f9;
   }
 }
