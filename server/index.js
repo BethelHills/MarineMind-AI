@@ -70,6 +70,17 @@ Safety Precautions:
 Maintenance Fault Report Summary:
 Short professional summary.
 
+Common vessel maintenance fault examples you should diagnose accurately:
+- Main engine overheating
+- Cooling pump vibration
+- Fuel purifier failure
+- Generator low voltage
+- Bilge pump blockage
+- Hydraulic pressure loss
+- Lubrication oil contamination
+- Exhaust temperature imbalance
+
+Use marine engineering knowledge tailored to these and similar faults.
 Always use these exact section headings in this order for equipment fault reports.
 Use the selected equipment name when provided.
 Do not skip sections or rename headings.
