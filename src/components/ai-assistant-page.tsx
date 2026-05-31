@@ -26,7 +26,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
@@ -103,11 +103,11 @@ function ChatMessageBubble({ message }: { message: ChatMessage }) {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}
+      className={`flex min-w-0 gap-2 sm:gap-3 ${isUser ? "justify-end" : "justify-start"}`}
     >
       {!isUser && (
         <motion.div
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-500/10 text-cyan-700"
+          className="hidden h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-500/10 text-cyan-700 sm:grid"
           whileHover={{ scale: 1.1, rotate: -6 }}
           transition={spring}
         >
@@ -116,22 +116,22 @@ function ChatMessageBubble({ message }: { message: ChatMessage }) {
       )}
 
       <div
-        className={`max-w-[85%] rounded-3xl p-4 sm:max-w-[75%] ${
+        className={`min-w-0 max-w-full rounded-3xl p-4 sm:max-w-[75%] ${
           isUser ? "bg-[#03131f] text-white" : "bg-white text-slate-800 shadow-sm"
         }`}
       >
-        <p className="text-sm leading-7">{message.text}</p>
+        <p className="whitespace-pre-wrap break-words text-sm leading-7">{message.text}</p>
         <div
-          className={`mt-3 flex items-center justify-between gap-4 text-xs ${
+          className={`mt-3 flex flex-wrap items-center justify-between gap-2 text-xs ${
             isUser ? "text-slate-400" : "text-slate-500"
           }`}
         >
-          <span>{message.time}</span>
+          <span className="shrink-0">{message.time}</span>
           {!isUser && (
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 hover:text-cyan-600"
+              className="inline-flex shrink-0 items-center gap-1 hover:text-cyan-600"
             >
               <Copy className="h-3.5 w-3.5" /> Copy
             </button>
@@ -141,7 +141,7 @@ function ChatMessageBubble({ message }: { message: ChatMessage }) {
 
       {isUser && (
         <motion.div
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-900 text-white"
+          className="hidden h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-900 text-white sm:grid"
           whileHover={{ scale: 1.1 }}
           transition={spring}
         >
@@ -311,6 +311,7 @@ export function AIAssistantPageContent() {
   const [selectedEquipment, setSelectedEquipment] = useState("Main Engine Alpha");
   const [activeHistory, setActiveHistory] = useState("Engine overheating");
   const [mobilePanel, setMobilePanel] = useState<"history" | "context" | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const stats = useMemo(() => {
     const assistantReplies = messages.filter((message) => message.role === "assistant").length;
@@ -321,6 +322,10 @@ export function AIAssistantPageContent() {
       responseRate: "Fast",
     };
   }, [messages]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, isLoading]);
 
   async function handleSend() {
     if (!input.trim() || isLoading) return;
@@ -376,28 +381,28 @@ export function AIAssistantPageContent() {
 
   return (
     <>
-      <section className="relative overflow-hidden rounded-[2rem] bg-[#03131f] p-6 text-white shadow-xl sm:p-8">
+      <section className="relative overflow-hidden rounded-[2rem] bg-[#03131f] p-4 text-white shadow-xl sm:p-8">
         <div className="absolute right-0 top-0 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-40 w-40 rounded-full bg-teal-400/10 blur-3xl" />
-        <div className="relative flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+        <div className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-center lg:gap-6">
           <div className="max-w-3xl">
             <motion.div
-              className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-white/8 px-4 py-2 text-sm text-cyan-100"
+              className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-white/8 px-3 py-1.5 text-xs text-cyan-100 sm:mb-4 sm:px-4 sm:py-2 sm:text-sm"
               whileHover={{ scale: 1.04 }}
               transition={spring}
             >
               <Anchor className="h-4 w-4 text-cyan-300" />
               MarineMind AI Diagnostic Assistant
             </motion.div>
-            <h1 className="text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+            <h1 className="text-2xl font-black tracking-tight sm:text-4xl lg:text-5xl">
               Diagnose marine equipment faults faster with AI.
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+            <p className="mt-3 hidden max-w-2xl text-sm leading-7 text-slate-300 sm:block sm:text-base">
               Enter a fault description and get possible causes, inspection steps, and maintenance
               actions for vessel equipment.
             </p>
           </div>
-          <div className="grid gap-3 rounded-3xl border border-white/10 bg-white/8 p-4 sm:grid-cols-2 lg:w-80">
+          <div className="hidden gap-3 rounded-3xl border border-white/10 bg-white/8 p-4 sm:grid sm:grid-cols-2 lg:w-80">
             <motion.div className="rounded-2xl bg-white/8 p-4" whileHover={{ scale: 1.03 }} transition={spring}>
               <p className="text-xs text-slate-400">Diagnostics</p>
               <p className="mt-2 text-3xl font-black text-cyan-300">{stats.diagnostics}</p>
@@ -410,38 +415,40 @@ export function AIAssistantPageContent() {
         </div>
       </section>
 
-      <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-4 hidden gap-4 sm:mt-6 sm:grid sm:grid-cols-2 xl:grid-cols-4">
         <SummaryCard icon={Bot} label="AI Replies" value={stats.diagnostics} note="Generated in this chat" className="bg-cyan-500/15 text-cyan-700" />
         <SummaryCard icon={AlertTriangle} label="Active Faults" value={stats.activeFaults} note="Open equipment issues" className="bg-red-500/15 text-red-700" />
         <SummaryCard icon={ShieldCheck} label="Saved Reports" value={stats.savedReports} note="Ready for export" className="bg-emerald-500/15 text-emerald-700" />
         <SummaryCard icon={Sparkles} label="AI Mode" value="Assist" note="Maintenance guidance" className="bg-amber-500/15 text-amber-700" />
       </section>
 
-      <section className="mt-6 grid gap-6 xl:grid-cols-[300px_1fr_330px]">
+      <section className="mt-4 md:mt-6 xl:grid xl:grid-cols-[300px_1fr_330px] xl:gap-6">
         <div className="hidden xl:block">
           <HistoryPanel active={activeHistory} setActive={setActiveHistory} />
         </div>
 
-        <HoverCard lift={false} className="overflow-hidden rounded-3xl border-0 bg-white shadow-sm">
-          <Card className="rounded-3xl border-0 bg-transparent shadow-none">
-            <CardContent className="p-0">
-              <div className="border-b bg-white p-4 sm:p-5">
+        <HoverCard lift={false} className="flex min-h-[calc(100dvh-10rem)] flex-col overflow-hidden rounded-3xl border-0 bg-white shadow-sm sm:min-h-[640px] md:min-h-0 md:h-auto">
+          <Card className="flex min-h-0 flex-1 flex-col rounded-3xl border-0 bg-transparent shadow-none">
+            <CardContent className="flex min-h-0 flex-1 flex-col p-0 md:h-[640px]">
+              <div className="shrink-0 border-b bg-white p-4 sm:p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <motion.div
-                      className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-500/10 text-cyan-700"
+                      className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-cyan-500/10 text-cyan-700"
                       whileHover={{ scale: 1.1, rotate: -6 }}
                       transition={spring}
                     >
                       <BrainCircuit className="h-6 w-6" />
                     </motion.div>
-                    <div>
-                      <h3 className="text-xl font-black text-slate-950">Marine Diagnostic Chat</h3>
+                    <div className="min-w-0">
+                      <h3 className="truncate text-lg font-black text-slate-950 sm:text-xl">
+                        Marine Diagnostic Chat
+                      </h3>
                       <p className="text-sm text-slate-500">AI guidance for vessel maintenance teams</p>
                     </div>
                   </div>
 
-                  <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+                  <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto] sm:gap-3">
                     <div className="relative">
                       <select
                         value={selectedEquipment}
@@ -458,7 +465,7 @@ export function AIAssistantPageContent() {
                       <Button
                         onClick={() => setMobilePanel("history")}
                         variant="outline"
-                        className="rounded-2xl xl:hidden"
+                        className="w-full rounded-2xl sm:w-auto xl:hidden"
                       >
                         <History className="mr-2 h-4 w-4" /> History
                       </Button>
@@ -467,7 +474,7 @@ export function AIAssistantPageContent() {
                       <Button
                         onClick={handleClearChat}
                         variant="outline"
-                        className="rounded-2xl text-red-600 hover:text-red-700"
+                        className="w-full rounded-2xl text-red-600 hover:text-red-700 sm:w-auto"
                       >
                         <Trash2 className="mr-2 h-4 w-4" /> Clear
                       </Button>
@@ -476,7 +483,7 @@ export function AIAssistantPageContent() {
                 </div>
               </div>
 
-              <div className="h-[560px] overflow-y-auto bg-[#f8fcff] p-4 sm:p-6">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-[#f8fcff] p-4 sm:p-6">
                 <div className="space-y-5">
                   {messages.map((message, index) => (
                     <ChatMessageBubble
@@ -501,11 +508,15 @@ export function AIAssistantPageContent() {
                       </div>
                     </motion.div>
                   )}
+                  <div ref={messagesEndRef} />
                 </div>
               </div>
 
-              <div className="border-t bg-white p-4 sm:p-5">
-                <div className="mb-4 grid gap-2 sm:flex sm:flex-wrap">
+              <div className="shrink-0 border-t bg-white p-4 pb-24 sm:p-5 xl:pb-5">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:hidden">
+                  Suggested prompts
+                </p>
+                <div className="mb-4 max-h-32 space-y-2 overflow-y-auto sm:max-h-none sm:flex sm:flex-wrap sm:gap-2 sm:space-y-0">
                   {quickPrompts.map((prompt) => (
                     <motion.button
                       key={prompt}
@@ -521,10 +532,10 @@ export function AIAssistantPageContent() {
                   ))}
                 </div>
 
-                <div className="flex items-end gap-3 rounded-3xl border bg-slate-50 p-3">
+                <div className="flex items-end gap-2 rounded-3xl border bg-slate-50 p-2 sm:gap-3 sm:p-3">
                   <motion.button
                     type="button"
-                    className="hidden rounded-2xl border bg-white p-3 text-slate-500 hover:text-cyan-600 sm:block"
+                    className="hidden shrink-0 rounded-2xl border bg-white p-3 text-slate-500 hover:text-cyan-600 sm:block"
                     whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
                     transition={spring}
@@ -542,11 +553,11 @@ export function AIAssistantPageContent() {
                     }}
                     disabled={isLoading}
                     placeholder="Describe the fault, symptoms, readings, or equipment behavior..."
-                    className="min-h-12 flex-1 resize-none bg-transparent px-2 py-3 text-sm outline-none disabled:opacity-60"
+                    className="min-h-11 min-w-0 flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none disabled:opacity-60 sm:min-h-12 sm:py-3"
                   />
                   <motion.button
                     type="button"
-                    className="hidden rounded-2xl border bg-white p-3 text-slate-500 hover:text-cyan-600 sm:block"
+                    className="hidden shrink-0 rounded-2xl border bg-white p-3 text-slate-500 hover:text-cyan-600 sm:block"
                     whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
                     transition={spring}
@@ -557,7 +568,7 @@ export function AIAssistantPageContent() {
                     <Button
                       onClick={() => void handleSend()}
                       disabled={isLoading}
-                      className="h-12 rounded-2xl bg-cyan-500 px-5 text-white hover:bg-cyan-600 disabled:opacity-60"
+                      className="h-11 shrink-0 rounded-2xl bg-cyan-500 px-4 text-white hover:bg-cyan-600 disabled:opacity-60 sm:h-12 sm:px-5"
                     >
                       {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                     </Button>
