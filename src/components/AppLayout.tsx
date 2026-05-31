@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from "react";
 import {
-  Anchor,
   BellRing,
   Bot,
   FileText,
@@ -14,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/Logo";
 import { NotificationBell } from "@/components/notification-bell";
 
 const navItems = [
@@ -60,16 +60,17 @@ export default function AppLayout({
         }`}
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-400/15 ring-1 ring-cyan-300/30">
-              <Anchor className="h-7 w-7 text-cyan-300" />
-            </div>
-
+          <button
+            type="button"
+            onClick={() => handleNavigate("/")}
+            className="flex items-center gap-3 text-left"
+          >
+            <Logo size="lg" />
             <div>
               <h1 className="text-lg font-black tracking-tight">MarineMind AI</h1>
               <p className="text-xs text-slate-400">Maintenance Command</p>
             </div>
-          </div>
+          </button>
 
           <button className="lg:hidden" onClick={() => setMobileOpen(false)}>
             <X className="h-6 w-6" />
