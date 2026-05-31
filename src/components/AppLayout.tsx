@@ -33,6 +33,20 @@ type AppLayoutProps = {
   onNavigate: (path: string) => void;
 };
 
+function HeaderSearchBar({ className }: { className?: string }) {
+  return (
+    <div
+      className={`flex items-center gap-2 rounded-2xl border bg-white px-4 py-3 ${className ?? ""}`}
+    >
+      <Search className="h-5 w-5 shrink-0 text-slate-400" />
+      <input
+        className="w-full min-w-0 bg-transparent text-sm outline-none"
+        placeholder="Search equipment, reports, alerts..."
+      />
+    </div>
+  );
+}
+
 export default function AppLayout({
   children,
   activePath,
@@ -109,29 +123,27 @@ export default function AppLayout({
 
       <main className="lg:pl-72">
         <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-[#f5fbff]/90 px-4 py-4 backdrop-blur lg:px-8">
-          <div className="flex items-center justify-between gap-4">
-            <button
-              className="rounded-xl border bg-white p-2 lg:hidden"
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </button>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-4">
+              <button
+                className="rounded-xl border bg-white p-2 lg:hidden"
+                onClick={() => setMobileOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </button>
 
-            <div className="hidden max-w-md flex-1 items-center gap-2 rounded-2xl border bg-white px-4 py-3 md:flex">
-              <Search className="h-5 w-5 text-slate-400" />
-              <input
-                className="w-full bg-transparent text-sm outline-none"
-                placeholder="Search equipment, reports, alerts..."
-              />
+              <HeaderSearchBar className="hidden max-w-md flex-1 md:flex" />
+
+              <div className="ml-auto flex shrink-0 items-center gap-3">
+                <NotificationBell onNavigate={handleNavigate} />
+
+                <Button className="rounded-2xl bg-[#03131f] text-white hover:bg-[#09243a]">
+                  Bethel
+                </Button>
+              </div>
             </div>
 
-            <div className="ml-auto flex items-center gap-3">
-              <NotificationBell onNavigate={handleNavigate} />
-
-              <Button className="rounded-2xl bg-[#03131f] text-white hover:bg-[#09243a]">
-                Bethel
-              </Button>
-            </div>
+            <HeaderSearchBar className="w-full md:hidden" />
           </div>
         </header>
 
