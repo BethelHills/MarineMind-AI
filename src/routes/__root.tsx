@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  Outlet,
   Link,
   createRootRouteWithContext,
   useRouter,
@@ -8,6 +7,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import App from "@/App";
 import { ThemeProvider } from "@/components/theme-provider";
 import { themeInitScript } from "@/lib/theme";
 import appCss from "../styles.css?url";
@@ -117,7 +117,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Outlet />
+        <App />
       </ThemeProvider>
     </QueryClientProvider>
   );

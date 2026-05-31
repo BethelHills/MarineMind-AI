@@ -19,7 +19,6 @@ app.get("/", (req, res) => {
   res.json({
     message: "MarineMind AI backend is running",
     status: "OK",
-    api: "/api/ai-diagnose",
   });
 });
 
