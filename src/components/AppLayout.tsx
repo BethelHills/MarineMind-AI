@@ -17,7 +17,7 @@ import { Logo } from "@/components/Logo";
 import { NotificationBell } from "@/components/notification-bell";
 
 const navItems = [
-  { name: "Dashboard", path: "/", icon: LayoutDashboard },
+  { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { name: "Equipment", path: "/equipment", icon: Gauge },
   { name: "Maintenance", path: "/maintenance", icon: Wrench },
   { name: "AI Assistant", path: "/ai-assistant", icon: Bot },
@@ -76,7 +76,7 @@ export default function AppLayout({
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => handleNavigate("/")}
+            onClick={() => handleNavigate("/dashboard")}
             className="flex items-center gap-3 text-left"
           >
             <Logo size="lg" />

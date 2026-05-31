@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import AppLayout from "@/components/AppLayout";
+import { MarineMindLandingPage } from "@/routes/index";
 
 import Dashboard from "@/pages/Dashboard";
 import Equipment from "@/pages/Equipment";
@@ -12,8 +13,7 @@ import Settings from "@/pages/Settings";
 
 function getInitialPath() {
   if (typeof window === "undefined") return "/";
-  const path = window.location.pathname;
-  return path === "/dashboard" ? "/" : path;
+  return window.location.pathname;
 }
 
 export default function App() {
@@ -21,8 +21,7 @@ export default function App() {
 
   useEffect(() => {
     function onPopState() {
-      const path = window.location.pathname;
-      setActivePath(path === "/dashboard" ? "/" : path);
+      setActivePath(window.location.pathname);
     }
 
     window.addEventListener("popstate", onPopState);
@@ -30,13 +29,15 @@ export default function App() {
   }, []);
 
   function handleNavigate(path: string) {
-    const nextPath = path === "/dashboard" ? "/" : path;
-    window.history.pushState({}, "", nextPath);
-    setActivePath(nextPath);
+    window.history.pushState({}, "", path);
+    setActivePath(path);
+  }
+
+  if (activePath === "/") {
+    return <MarineMindLandingPage onNavigate={handleNavigate} />;
   }
 
   const pages: Record<string, ReactNode> = {
-    "/": <Dashboard />,
     "/dashboard": <Dashboard />,
     "/equipment": <Equipment />,
     "/maintenance": <Maintenance />,

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -162,7 +162,37 @@ function FeatureCard({
   );
 }
 
-function MarineMindLandingPage() {
+type MarineMindLandingPageProps = {
+  onNavigate?: (path: string) => void;
+};
+
+function LandingLink({
+  to,
+  className,
+  children,
+  onNavigate,
+}: {
+  to: string;
+  className?: string;
+  children: React.ReactNode;
+  onNavigate?: (path: string) => void;
+}) {
+  return (
+    <a
+      href={to}
+      className={className}
+      onClick={(event) => {
+        if (!onNavigate) return;
+        event.preventDefault();
+        onNavigate(to);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+export function MarineMindLandingPage({ onNavigate }: MarineMindLandingPageProps = {}) {
   return (
     <div className="min-h-screen bg-[#03131f] text-white overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#1d9bf0_0%,transparent_28%),radial-gradient(circle_at_top_left,#16d6a5_0%,transparent_24%)] opacity-30" />
@@ -191,7 +221,9 @@ function MarineMindLandingPage() {
               asChild
               className="rounded-full bg-cyan-400 px-5 text-slate-950 hover:bg-cyan-300"
             >
-              <Link to="/dashboard">Open Dashboard</Link>
+              <LandingLink to="/dashboard" onNavigate={onNavigate}>
+                Open Dashboard
+              </LandingLink>
             </Button>
           </motion.div>
         </nav>
@@ -228,7 +260,11 @@ function MarineMindLandingPage() {
                   asChild
                   className="group h-12 rounded-full bg-cyan-400 px-7 text-base font-semibold text-slate-950 hover:bg-cyan-300"
                 >
-                  <Link to="/dashboard" className="inline-flex items-center">
+                  <LandingLink
+                    to="/dashboard"
+                    onNavigate={onNavigate}
+                    className="inline-flex items-center"
+                  >
                     Start Building
                     <motion.span
                       className="ml-2 inline-flex"
@@ -238,7 +274,7 @@ function MarineMindLandingPage() {
                     >
                       <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </motion.span>
-                  </Link>
+                  </LandingLink>
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} transition={spring}>
@@ -456,10 +492,14 @@ function MarineMindLandingPage() {
                 asChild
                 className="group h-12 rounded-full bg-white px-7 text-base font-semibold text-slate-950 hover:bg-slate-200"
               >
-                <Link to="/dashboard" className="inline-flex items-center">
+                <LandingLink
+                  to="/dashboard"
+                  onNavigate={onNavigate}
+                  className="inline-flex items-center"
+                >
                   Go to Dashboard
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
+                </LandingLink>
               </Button>
             </motion.div>
           </motion.div>
