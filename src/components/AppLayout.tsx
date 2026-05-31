@@ -15,7 +15,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { NotificationBell } from "@/components/notification-bell";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -127,7 +126,6 @@ export default function AppLayout({
             </div>
 
             <div className="ml-auto flex items-center gap-3">
-              <ThemeToggle />
               <NotificationBell onNavigate={handleNavigate} />
 
               <Button className="rounded-2xl bg-[#03131f] text-white hover:bg-[#09243a]">
