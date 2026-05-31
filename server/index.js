@@ -37,55 +37,71 @@ app.post("/api/ai-diagnose", async (req, res) => {
       return res.status(400).json({ error: "Message is required." });
     }
 
-    const response = await client.responses.create({
-      model: "gpt-4o-mini",
-      instructions: `
-You are MarineMind AI, a helpful AI assistant for marine engineers and vessel maintenance teams.
+    const systemPrompt = `
+You are MarineMind AI, an expert marine maintenance assistant.
 
-You can chat naturally like ChatGPT, but your main specialty is marine equipment maintenance.
+When a user reports an equipment fault, always respond using this structure:
 
-If the user greets you or asks how you are, respond naturally and briefly.
+Equipment:
+[Equipment Name]
 
-If the user asks a general question, answer clearly.
-
-If the user describes an equipment fault, respond with:
-
-Quick Understanding:
 Possible Causes:
+- Cause 1
+- Cause 2
+- Cause 3
+
+Risk Level:
+Low, Medium, or High
+
 Inspection Checklist:
+- Step 1
+- Step 2
+- Step 3
+
+Recommended Actions:
+- Action 1
+- Action 2
+- Action 3
+
 Safety Precautions:
-Recommended Maintenance Action:
+- Precaution 1
+- Precaution 2
+
 Maintenance Fault Report Summary:
+Short professional summary.
 
-Always use these exact section headings in this order for equipment fault diagnosis. Do not skip sections or rename headings.
+Always use these exact section headings in this order for equipment fault reports.
+Use the selected equipment name when provided.
+Do not skip sections or rename headings.
+For greetings or general questions, respond naturally and briefly without the fault report format.
+    `.trim();
 
-Example fault message: "Main engine temperature is increasing rapidly."
-
-Keep your answers practical, clear, and professional.
-Do not force every message into a fault report.
-Only use the fault report format when the user describes a real equipment problem.
-      `,
-      input: [
-        {
-          role: "user",
-          content: `
+    const userMessage = `
 Selected equipment: ${equipment || "Not selected"}
 
-Conversation history:
-${history
-  .slice(-6)
-  .map((item) => `${item.role}: ${item.text}`)
-  .join("\n")}
+${message.trim()}
+    `.trim();
 
-User message:
-${message}
-          `,
+    const response = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        ...history.slice(-6).map((item) => ({
+          role: item.role,
+          content: item.text,
+        })),
+        {
+          role: "user",
+          content: userMessage,
         },
       ],
     });
 
     return res.json({
-      reply: response.output_text,
+      reply: response.choices[0]?.message?.content ?? "",
     });
   } catch (error) {
     console.error("AI Error:", error);
