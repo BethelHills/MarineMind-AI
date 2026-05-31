@@ -505,18 +505,18 @@ export function AIAssistantPageContent() {
               </div>
 
               <div className="border-t bg-white p-4 sm:p-5">
-                <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+                <div className="mb-4 grid gap-2 sm:flex sm:flex-wrap">
                   {quickPrompts.map((prompt) => (
                     <motion.button
                       key={prompt}
                       type="button"
                       onClick={() => handleQuickPrompt(prompt)}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       transition={spring}
-                      className="shrink-0 rounded-full border bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700"
+                      className="w-full rounded-2xl border bg-slate-50 px-4 py-3 text-left text-sm font-semibold leading-6 text-slate-600 transition hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-700 sm:w-auto sm:max-w-sm sm:rounded-full sm:px-4 sm:py-2 sm:text-xs sm:leading-5"
                     >
-                      {prompt.slice(0, 42)}...
+                      {prompt}
                     </motion.button>
                   ))}
                 </div>
