@@ -9,11 +9,13 @@ import {
   ChevronDown,
   ClipboardList,
   Copy,
+  Download,
   Gauge,
   History,
   Lightbulb,
   Loader2,
   Mic,
+  MicOff,
   Plus,
   Search,
   Send,
@@ -21,12 +23,11 @@ import {
   Sparkles,
   ThermometerSun,
   Trash2,
-  Upload,
   UserRound,
   Wrench,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
@@ -41,7 +42,7 @@ import {
   quickPrompts,
   type ChatMessage,
 } from "@/lib/ai-assistant-data";
-import { historyStatusStyle } from "@/lib/ai-assistant-utils";
+import { historyStatusStyle, createSpeechRecognition, downloadChatTranscript } from "@/lib/ai-assistant-utils";
 import { copyToClipboard } from "@/lib/utils";
 
 const faultAreaIcons: Record<string, LucideIcon> = {
@@ -90,6 +91,37 @@ function SummaryCard({
         </CardContent>
       </Card>
     </HoverCard>
+  );
+}
+
+function ChatActionButton({
+  label,
+  onClick,
+  disabled,
+  active,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  active?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      disabled={disabled}
+      onClick={onClick}
+      className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl border bg-white text-slate-500 transition sm:h-11 sm:w-11 ${
+        active
+          ? "border-red-200 bg-red-50 text-red-600"
+          : "hover:border-cyan-200 hover:text-cyan-600"
+      } disabled:cursor-not-allowed disabled:opacity-50`}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -364,7 +396,11 @@ export function AIAssistantPageContent() {
   const [selectedEquipment, setSelectedEquipment] = useState("Main Engine Alpha");
   const [activeHistory, setActiveHistory] = useState("Engine overheating");
   const [mobilePanel, setMobilePanel] = useState<"history" | "context" | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<ReturnType<typeof createSpeechRecognition>>(null);
 
   const stats = useMemo(() => {
     const assistantReplies = messages.filter((message) => message.role === "assistant").length;
@@ -379,6 +415,52 @@ export function AIAssistantPageContent() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    recognitionRef.current = createSpeechRecognition();
+    setSpeechSupported(!!recognitionRef.current);
+
+    return () => {
+      recognitionRef.current?.abort();
+    };
+  }, []);
+
+  function handleDownloadChat() {
+    downloadChatTranscript(messages, selectedEquipment);
+    setDownloaded(true);
+    window.setTimeout(() => setDownloaded(false), 2000);
+  }
+
+  function toggleVoiceInput() {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+
+    if (isListening) {
+      recognition.stop();
+      setIsListening(false);
+      return;
+    }
+
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        transcript += event.results[index][0]?.transcript ?? "";
+      }
+      setInput(transcript.trim());
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+
+    try {
+      recognition.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+    }
+  }
 
   async function handleSend() {
     if (!input.trim() || isLoading) return;
@@ -516,6 +598,17 @@ export function AIAssistantPageContent() {
                     </div>
                     <HoverPressable>
                       <Button
+                        onClick={handleDownloadChat}
+                        variant="outline"
+                        className="w-full rounded-2xl sm:w-auto"
+                        title="Download chat transcript"
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        {downloaded ? "Saved" : "Download"}
+                      </Button>
+                    </HoverPressable>
+                    <HoverPressable>
+                      <Button
                         onClick={() => setMobilePanel("history")}
                         variant="outline"
                         className="w-full rounded-2xl sm:w-auto xl:hidden"
@@ -584,16 +677,13 @@ export function AIAssistantPageContent() {
                   ))}
                 </div>
 
-                <div className="flex items-end gap-2 rounded-3xl border bg-slate-50 p-2 sm:gap-3 sm:p-3">
-                  <motion.button
-                    type="button"
-                    className="hidden shrink-0 rounded-2xl border bg-white p-3 text-slate-500 hover:text-cyan-600 sm:block"
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={spring}
+                <div className="flex items-end gap-1.5 rounded-3xl border bg-slate-50 p-2 sm:gap-2 sm:p-3">
+                  <ChatActionButton
+                    label={downloaded ? "Chat downloaded" : "Download chat transcript"}
+                    onClick={handleDownloadChat}
                   >
-                    <Upload className="h-5 w-5" />
-                  </motion.button>
+                    <Download className={`h-4 w-4 sm:h-5 sm:w-5 ${downloaded ? "text-emerald-600" : ""}`} />
+                  </ChatActionButton>
                   <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -603,29 +693,47 @@ export function AIAssistantPageContent() {
                         void handleSend();
                       }
                     }}
-                    disabled={isLoading}
-                    placeholder="Describe the fault, symptoms, readings, or equipment behavior..."
-                    className="min-h-11 min-w-0 flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none disabled:opacity-60 sm:min-h-12 sm:py-3"
+                    disabled={isLoading || isListening}
+                    placeholder={
+                      isListening
+                        ? "Listening... speak your fault description"
+                        : "Describe the fault, symptoms, readings, or equipment behavior..."
+                    }
+                    className="min-h-11 min-w-0 flex-1 resize-none bg-transparent px-1 py-2 text-sm outline-none disabled:opacity-60 sm:min-h-12 sm:px-2 sm:py-3"
                   />
-                  <motion.button
-                    type="button"
-                    className="hidden shrink-0 rounded-2xl border bg-white p-3 text-slate-500 hover:text-cyan-600 sm:block"
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={spring}
+                  <ChatActionButton
+                    label={
+                      speechSupported
+                        ? isListening
+                          ? "Stop voice input"
+                          : "Start voice input"
+                        : "Voice input not supported on this device"
+                    }
+                    onClick={toggleVoiceInput}
+                    disabled={!speechSupported || isLoading}
+                    active={isListening}
                   >
-                    <Mic className="h-5 w-5" />
-                  </motion.button>
+                    {isListening ? (
+                      <MicOff className="h-4 w-4 animate-pulse sm:h-5 sm:w-5" />
+                    ) : (
+                      <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
+                    )}
+                  </ChatActionButton>
                   <HoverPressable>
                     <Button
                       onClick={() => void handleSend()}
-                      disabled={isLoading}
-                      className="h-11 shrink-0 rounded-2xl bg-cyan-500 px-4 text-white hover:bg-cyan-600 disabled:opacity-60 sm:h-12 sm:px-5"
+                      disabled={isLoading || isListening}
+                      className="h-10 shrink-0 rounded-2xl bg-cyan-500 px-3 text-white hover:bg-cyan-600 disabled:opacity-60 sm:h-11 sm:px-5"
                     >
                       {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                     </Button>
                   </HoverPressable>
                 </div>
+                {!speechSupported && (
+                  <p className="mt-2 text-xs text-slate-400 sm:hidden">
+                    Voice input works best in Chrome and Safari on supported devices.
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
