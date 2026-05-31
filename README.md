@@ -224,39 +224,39 @@ http://localhost:5001
 
 ### Landing Page
 
-Add screenshot here
+![MarineMind AI landing page](public/screenshots/landing-page.png)
 
 ### Dashboard
 
-Add screenshot here
+![MarineMind AI dashboard](public/screenshots/dashboard.png)
 
 ### Equipment
 
-Add screenshot here
+![MarineMind AI equipment management](public/screenshots/equipment.png)
 
 ### Maintenance
 
-Add screenshot here
+![MarineMind AI maintenance management](public/screenshots/maintenance.png)
 
 ### AI Assistant
 
-Add screenshot here
+![MarineMind AI assistant](public/screenshots/ai-assistant.png)
 
 ### Alerts
 
-Add screenshot here
+![MarineMind AI alerts center](public/screenshots/alerts.png)
 
 ### Reports
 
-Add screenshot here
+![MarineMind AI reports center](public/screenshots/reports.png)
 
 ### Documents
 
-Add screenshot here
+![MarineMind AI document vault](public/screenshots/documents.png)
 
 ### Settings
 
-Add screenshot here
+![MarineMind AI settings](public/screenshots/settings.png)
 
 ---
 
