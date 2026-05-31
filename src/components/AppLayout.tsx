@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { NotificationBell } from "@/components/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
   { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -46,7 +47,7 @@ export default function AppLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#f5fbff] text-slate-900">
+    <div className="min-h-screen bg-[#f5fbff] text-slate-900 dark:bg-[#0a1628] dark:text-slate-100">
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
@@ -108,28 +109,36 @@ export default function AppLayout({
       </aside>
 
       <main className="lg:pl-72">
-        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-[#f5fbff]/90 px-4 py-4 backdrop-blur lg:px-8">
+        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-[#f5fbff]/90 px-4 py-4 backdrop-blur dark:border-slate-800/80 dark:bg-[#0a1628]/90 lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <button
-              className="rounded-xl border bg-white p-2 lg:hidden"
+              className="rounded-xl border bg-white p-2 dark:border-slate-700 dark:bg-[#142236] lg:hidden"
               onClick={() => setMobileOpen(true)}
             >
               <Menu className="h-5 w-5" />
             </button>
 
-            <div className="hidden max-w-md flex-1 items-center gap-2 rounded-2xl border bg-white px-4 py-3 md:flex">
+            <div className="hidden max-w-md flex-1 items-center gap-2 rounded-2xl border bg-white px-4 py-3 dark:border-slate-700 dark:bg-[#142236] md:flex">
               <Search className="h-5 w-5 text-slate-400" />
               <input
-                className="w-full bg-transparent text-sm outline-none"
+                className="w-full bg-transparent text-sm outline-none dark:text-slate-100 dark:placeholder:text-slate-500"
                 placeholder="Search equipment, reports, alerts..."
               />
             </div>
 
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex items-center gap-2 sm:gap-3">
+              <ThemeToggle />
               <NotificationBell onNavigate={handleNavigate} />
 
-              <Button className="rounded-2xl bg-[#03131f] text-white hover:bg-[#09243a]">
+              <Button className="hidden rounded-2xl bg-[#03131f] text-white hover:bg-[#09243a] sm:inline-flex">
                 Bethel
+              </Button>
+              <Button
+                size="icon"
+                className="h-10 w-10 rounded-2xl bg-[#03131f] text-white hover:bg-[#09243a] sm:hidden"
+                aria-label="User profile"
+              >
+                B
               </Button>
             </div>
           </div>
