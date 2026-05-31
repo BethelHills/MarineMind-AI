@@ -20,6 +20,7 @@ export const equipmentOptions = [
 ] as const;
 
 export const quickPrompts = [
+  "Main engine temperature is increasing rapidly.",
   "Main engine temperature is rising after 3 hours of operation.",
   "Cooling pump is vibrating and discharge pressure is low.",
   "Generator output voltage is unstable during load change.",
