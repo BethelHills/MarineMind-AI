@@ -462,15 +462,17 @@ export function AIAssistantPageContent() {
     }
   }
 
-  async function handleSend() {
-    if (!input.trim() || isLoading) return;
+  async function handleSendMessage(promptText?: string) {
+    const prompt = (promptText ?? input).trim();
+    if (!prompt || isLoading) return;
 
-    const prompt = input.trim();
     const now = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const userMessage: ChatMessage = { role: "user", text: prompt, time: now };
 
     setMessages((current) => [...current, userMessage]);
-    setInput("");
+    if (!promptText) {
+      setInput("");
+    }
     setIsLoading(true);
 
     try {
@@ -500,8 +502,12 @@ export function AIAssistantPageContent() {
     }
   }
 
+  async function handleSend() {
+    await handleSendMessage();
+  }
+
   function handleQuickPrompt(prompt: string) {
-    setInput(prompt);
+    void handleSendMessage(prompt);
   }
 
   function handleClearChat() {
