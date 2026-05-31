@@ -23,6 +23,13 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({
+    message: "MarineMind AI API is healthy",
+    status: "OK",
+  });
+});
+
 app.post("/api/ai-diagnose", async (req, res) => {
   try {
     const { message, equipment, history = [] } = req.body;
