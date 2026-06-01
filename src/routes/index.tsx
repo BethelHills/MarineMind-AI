@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -16,26 +15,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { cardHover, spring } from "@/lib/motion";
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "MarineMind AI — AI-Powered Maintenance for Marine Operations" },
-      {
-        name: "description",
-        content:
-          "Smart maintenance. Fewer breakdowns. Safer operations. AI diagnostics, predictive alerts, and reports for marine fleets.",
-      },
-      { property: "og:title", content: "MarineMind AI" },
-      {
-        property: "og:description",
-        content: "AI-powered maintenance assistant for marine operations.",
-      },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-  }),
-  component: MarineMindLandingPage,
-});
 
 const features = [
   {

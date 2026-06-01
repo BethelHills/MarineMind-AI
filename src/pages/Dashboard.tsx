@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { StatCard, MarineCard } from "@/components/marine-ui";
 import { HoverCard, HoverPressable, HoverRow } from "@/components/motion";
 import {
@@ -120,7 +119,7 @@ export default function Dashboard() {
                   asChild
                   className="w-full rounded-2xl bg-cyan-400 text-slate-950 hover:bg-cyan-300"
                 >
-                  <Link to="/ai-assistant">Open AI Assistant</Link>
+                  <a href="/ai-assistant">Open AI Assistant</a>
                 </Button>
               </HoverPressable>
             </CardContent>
