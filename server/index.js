@@ -125,7 +125,7 @@ ${message.trim()}
 
 app.use(express.static(path.join(__dirname, "../dist")));
 
-app.get("/{*path}", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
